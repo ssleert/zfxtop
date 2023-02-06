@@ -2,7 +2,7 @@ package self
 
 import _ "embed"
 
-//go:generate sh -c "git rev-parse --short HEAD > commit.dat"
+//go:generate sh -c "git rev-parse --short HEAD | tr -d '\n' > commit.dat"
 //go:embed commit.dat
 var Commit string
 

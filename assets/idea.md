@@ -55,36 +55,43 @@
 
 # config file example
 ```
-[ftop]
-
 [tui]
+
+# time between info update in millisecond
+update = 300
+
 # requires nerd font
-icons=true
-colors=true
+icons = true
+
+# can be rounded, sharp, double, ascii, dot
+borders = rounded
+
+# enable or disable colors
+colors = true
 
 
 # colors are set in the 256-color palette
 [colors]
-faint=238
-mid=245
+faint  = 238
+mid    = 245
 
-load0=27
-load1=63
-load2=99
-load3=135
-load4=171
-load5=207
+load0  = 27
+load1  = 63
+load2  = 99
+load3  = 135
+load4  = 171
+load5  = 207
 
-tempr0=49
-tempr1=79
-tempr2=109
-tempr3=139
-tempr4=169
-tempr5=199
+tempr0 = 49
+tempr1 = 79
+tempr2 = 109
+tempr3 = 139
+tempr4 = 169
+tempr5 = 199
 
-list0=109
-list0=79
-list0=169
+list0  = 109
+list1  = 79
+list2  = 169
 ```
 
 
