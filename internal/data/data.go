@@ -52,9 +52,9 @@ type Dynamic struct {
 	BatCharge int
 	BatLife   time.Duration
 }
-
 type Static struct {
 	// static mem frame info
+
 	CpuName string
 
 	// static mem frame info
@@ -119,6 +119,7 @@ type pool struct {
 	batLife   chan time.Duration
 
 	err chan error
+	n   int
 }
 
 // start goroutines for data collections
@@ -126,6 +127,8 @@ func Start() *pool {
 	pool := pool{
 		start: make(chan struct{}),
 		time:  make(chan time.Time),
+		err:   make(chan error),
+		n:     1,
 	}
 
 	go GetTimeNow(pool.start, pool.err, pool.time)
@@ -133,21 +136,32 @@ func Start() *pool {
 	return &pool
 }
 
-func (p *pool) startPool(n int) {
-	for i := 0; i < n; i++ {
+func (p *pool) startPool() {
+	for i := 0; i < p.n; i++ {
 		p.start <- struct{}{}
 	}
 }
 
-func (p *pool) Update(d *Dynamic) error {
-	p.startPool(1)
+func (p *pool) handleErr() error {
+	for i := 0; i < p.n; i++ {
+		err := <-p.err
+		if err != nil {
+			return err
+		}
+	}
 
-	err := <-p.err
+	return nil
+}
+
+func (p *pool) Update(d *Dynamic) error {
+	p.startPool()
+
+	d.Time = <-p.time
+
+	err := p.handleErr()
 	if err != nil {
 		return err
 	}
-
-	d.Time = <-p.time
 
 	return nil
 }

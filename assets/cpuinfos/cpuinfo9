@@ -1,0 +1,11 @@
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 63
+model name      : Intel(R) Celeron(R) CPU G3900 @ 2.80GHz
+stepping        : 2
+microcode  : 0x49
+cpu MHz    : 3292.387
+cache size  : 25600 KB
+physical id  : 0
+siblings  : 20

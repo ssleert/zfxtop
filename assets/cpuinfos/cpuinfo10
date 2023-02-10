@@ -1,0 +1,13 @@
+processor  : 0
+vendor_id  : AuthenticAMD
+cpu family  : 16
+model    : 6
+model name  : AMD Turion(tm) II P520 Dual-Core Processor
+stepping  : 3
+microcode  : 0x10000c8
+cpu MHz    : 2100.000
+cache size  : 1024 KB
+physical id  : 0
+siblings  : 2
+core id    : 0
+cpu cores  : 2

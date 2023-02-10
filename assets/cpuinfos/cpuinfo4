@@ -1,0 +1,17 @@
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 140
+model name	: 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz
+stepping	: 1
+microcode	: 0xa6
+cpu MHz		: 1054.773
+cache size	: 12288 KB
+physical id	: 0
+siblings	: 8
+core id		: 0
+cpu cores	: 4
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes

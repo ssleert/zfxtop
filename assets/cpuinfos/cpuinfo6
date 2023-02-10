@@ -1,0 +1,10 @@
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 165
+model name	: Intel(R) Core(TM) i5-10300H CPU @ 2.50GHz
+stepping	: 2
+microcode	: 0xea
+cpu MHz		: 1930.280
+cache size	: 8192 KB
+physical id	: 0

@@ -1,0 +1,12 @@
+processor       : 0
+vendor_id       : AuthenticAMD
+cpu family      : 25
+model           : 33
+model name      : AMD Ryzen 7 5800X3D 8-Core Processor
+stepping        : 2
+microcode       : 0xa20120a
+cpu MHz         : 2188.858
+cache size      : 512 KB
+physical id     : 0
+siblings        : 16
+core id         : 0

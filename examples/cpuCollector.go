@@ -1,22 +1,32 @@
-package data
-
-// os depent functions
+package main
 
 import (
 	"github.com/ssleert/sfolib"
 	"strings"
 )
 
-// +================= static info functions =================+
+var (
+	cpuinfos = []string{
+		"assets/cpuinfos/cpuinfo1",
+		"assets/cpuinfos/cpuinfo2",
+		"assets/cpuinfos/cpuinfo3",
+		"assets/cpuinfos/cpuinfo4",
+		"assets/cpuinfos/cpuinfo5",
+		"assets/cpuinfos/cpuinfo6",
+		"assets/cpuinfos/cpuinfo7",
+		"assets/cpuinfos/cpuinfo8",
+		"assets/cpuinfos/cpuinfo9",
+		"assets/cpuinfos/cpuinfo10",
+	}
+)
 
-func getCpuModel(ch chan string, errch chan error) {
+func getCpuModel(f string) (string, error) {
 	var result strings.Builder
 	result.Grow(100)
 
-	s, err := sfolib.ReadLines("/proc/cpuinfo", 5)
+	s, err := sfolib.ReadLines(f, 5)
 	if err != nil {
-		ch <- ""
-		errch <- err
+		return "", err
 	}
 
 	cpuName := strings.Fields(s[4])[3:]
@@ -72,8 +82,16 @@ func getCpuModel(ch chan string, errch chan error) {
 		}
 	}
 
-	ch <- result.String()
-	errch <- err
+	return result.String(), err
 }
 
-// +=========================================================+
+func main() {
+	for _, e := range cpuinfos {
+		l, err := getCpuModel(e)
+		if err != nil {
+			panic(err)
+		}
+		print(l)
+		print("\n")
+	}
+}
