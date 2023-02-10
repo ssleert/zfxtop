@@ -14,3 +14,5 @@ func (e *ColorOutOfRangeError) Error() string {
 }
 
 var ErrConfFileNotExist = errors.New("conf file not exists")
+var ErrNoConfFiles = errors.New("no conf files finded in system")
+

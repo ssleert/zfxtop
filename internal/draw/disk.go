@@ -28,10 +28,7 @@ func (s *Info) diskStatic() {
 	s.putStr(62, s.y+21, "GiB")
 
 	s.reset()
-	s.putStr(59, s.y+18, sterm.RevPrint(fmt.Sprintf(" %d", s.dataStat.DiskTotal)))
-
-	// not implemented
-	return
+	s.putStr(59, s.y+18, sterm.RevPrint(fmt.Sprintf(" %d", s.DataStat.DiskTotal)))
 }
 
 // draw dynamic info for bat block

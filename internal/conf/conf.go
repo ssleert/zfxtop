@@ -165,7 +165,7 @@ func Parse(ConfFile string) error {
 			}
 		}
 		if confDir == "" {
-			return ErrConfFileNotExist
+			return ErrNoConfFiles
 		}
 	} else if !sfolib.Exists(ConfFile) {
 		return ErrConfFileNotExist

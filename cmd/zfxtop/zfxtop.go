@@ -1,20 +1,24 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/ssleert/sterm"
 	"github.com/ssleert/zfxtop/internal/conf"
 	"github.com/ssleert/zfxtop/internal/conv"
+	"github.com/ssleert/zfxtop/internal/data"
 	"github.com/ssleert/zfxtop/internal/draw"
 	"github.com/ssleert/zfxtop/internal/msg"
 	"github.com/ssleert/zfxtop/internal/self"
 	"os"
+	"time"
 )
 
 var (
 	config  string
 	version bool
+	test    bool
 
 	versionFunc = func() {
 		logoColors := [...]string{
@@ -38,21 +42,29 @@ var (
 
 func init() {
 	flag.BoolVar(&version, "v", false, "get version info")
-	flag.StringVar(&config, "c", "", "get version info")
+	flag.StringVar(&config, "c", "", "set config location")
+	flag.BoolVar(&test, "t", false, "test flag")
 	flag.Parse()
 }
 
 func main() {
 	if version {
 		versionFunc()
-		os.Exit(0)
+		return
 	}
 
+	if test {
+		fmt.Println("asd")
+		return
+	}
+
+	// parse config
 	err := conf.Parse(config)
-	if err != nil {
+	if err != nil && !errors.Is(err, conf.ErrNoConfFiles) {
 		msg.ExitMsg(err)
 	}
 
+	// start draw module with args from config
 	s, err := draw.Start(
 		conf.Icons,
 		conf.Borders,
@@ -66,8 +78,55 @@ func main() {
 		msg.ExitMsg(err)
 	}
 
-	s.GetStaticData().Update()
-	buf := s.Static()
-	fmt.Println(buf)
-	fmt.Println()
+	d := data.Start()
+
+	datadyn := &s.DataDyn
+	datastat := &s.DataStat
+
+	updateAll := func() {
+		data.Update(datastat)
+		buf := s.Static()
+		fmt.Print(buf)
+		err := d.Update(datadyn)
+		if err != nil {
+			msg.ExitMsg(err)
+		}
+		buf = s.Dynamic()
+		fmt.Print(buf)
+	}
+
+	updateDyn := func() {
+		d.Update(datadyn)
+		buf := s.Dynamic()
+		fmt.Print(buf)
+	}
+
+	// handle user input
+	go func() {
+		for {
+			ch, err := sterm.GetChar()
+			if err != nil {
+				panic(err)
+			}
+			switch ch {
+			case 'q', 'Q', 'й', 'Й':
+				s.Stop()
+				os.Exit(0)
+			case 'r', 'R', 'к', 'К':
+				updateAll()
+			default:
+				continue
+			}
+		}
+	}()
+
+	// draw first data
+	updateAll()
+
+	ticker := time.NewTicker(conf.Update)
+
+	// main loop
+	for range ticker.C {
+		updateDyn()
+	}
 }

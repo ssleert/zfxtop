@@ -13,9 +13,10 @@ type iconed [3]string
 type Info struct {
 	x        int
 	y        int
+	s        sterm.State
 	tui      strings.Builder
-	dataDyn  data.Dynamic
-	dataStat data.Static
+	DataDyn  data.Dynamic
+	DataStat data.Static
 
 	// from user
 	icons      bool
@@ -62,13 +63,16 @@ func Start(
 	cli [3]string,
 ) (*Info, error) {
 	fmt.Print(sterm.ReserveArea(Size))
+	fmt.Print(sterm.CursorHide())
 	x, y, err := sterm.CursorPos()
 	if err != nil {
 		return nil, err
 	}
-	return &Info{
+	s, err := sterm.GetState()
+	info := Info{
 		x:          x - 1,
 		y:          y - 1,
+		s:          s,
 		icons:      ico,
 		borders:    brd,
 		colorMid:   cm,
@@ -76,15 +80,16 @@ func Start(
 		colorLoad:  cl,
 		colorTempr: ct,
 		colorList:  cli,
-	}, nil
+	}
+	return &info, nil
 }
 
-func (s *Info) GetDynamicData() *data.Dynamic {
-	return &s.dataDyn
-}
-
-func (s *Info) GetStaticData() *data.Static {
-	return &s.dataStat
+// stop tui drawing
+func (s *Info) Stop() {
+	fmt.Print(sterm.CursorShow())
+	fmt.Print(sterm.CursorTo(1, s.y+1))
+	fmt.Print(sterm.ClearScreenDown())
+	sterm.Restore(s.s)
 }
 
 // draw static info
@@ -98,6 +103,8 @@ func (s *Info) Static() string {
 	s.batStatic()
 	s.diskStatic()
 	s.swapStatic()
+	s.cpuStatic()
+	s.memStatic()
 
 	return s.tui.String()
 }
@@ -105,6 +112,9 @@ func (s *Info) Static() string {
 // draw dinamic info
 // like cpu/ram/swap graph
 // executes on every tick
-func (s *Info) Dinamic() string {
-	return "not implemented"
+func (s *Info) Dynamic() string {
+	s.tui.Reset()
+	s.cpuDynamic()
+
+	return s.tui.String()
 }

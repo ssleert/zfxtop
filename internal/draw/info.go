@@ -14,6 +14,6 @@ func (s *Info) infoStatic() {
 	s.writeIconed(38, s.y+27, &distroName)
 	s.writeIconed(38, s.y+28, &hostName)
 
-	s.putStr(64, s.y+27, sterm.RevPrint(s.dataStat.DistroName))
-	s.putStr(64, s.y+28, sterm.RevPrint(s.dataStat.HostName))
+	s.putStr(64, s.y+27, sterm.RevPrint(s.DataStat.DistroName))
+	s.putStr(64, s.y+28, sterm.RevPrint(s.DataStat.HostName))
 }

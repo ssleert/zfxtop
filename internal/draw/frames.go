@@ -47,13 +47,12 @@ func (s *Info) frames() {
 	s.reset()
 	s.tui.WriteString(
 		fmt.Sprintf(
-			"%s%sQ%s - quit | %sR%s - redraw%s",
+			"%s%sQ%s - quit | %sR%s - redraw",
 			sterm.CursorTo(26, s.y+30),
 			s.colorMid,
 			s.colorFaint,
 			s.colorMid,
 			s.colorFaint,
-			sterm.Reset,
 		),
 	)
 }
