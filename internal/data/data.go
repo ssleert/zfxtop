@@ -136,15 +136,15 @@ func Start() *pool {
 	return &pool
 }
 
-func (p *pool) startPool() {
-	for i := 0; i < p.n; i++ {
-		p.start <- struct{}{}
+func startPool(start chan struct{}, n int) {
+	for i := 0; i < n; i++ {
+		start <- struct{}{}
 	}
 }
 
-func (p *pool) handleErr() error {
-	for i := 0; i < p.n; i++ {
-		err := <-p.err
+func handleErr(errch chan error, n int) error {
+	for i := 0; i < n; i++ {
+		err := <-errch
 		if err != nil {
 			return err
 		}
@@ -154,11 +154,11 @@ func (p *pool) handleErr() error {
 }
 
 func (p *pool) Update(d *Dynamic) error {
-	p.startPool()
+	startPool(p.start, p.n)
 
 	d.Time = <-p.time
 
-	err := p.handleErr()
+	err := handleErr(p.err, p.n)
 	if err != nil {
 		return err
 	}
@@ -166,10 +166,22 @@ func (p *pool) Update(d *Dynamic) error {
 	return nil
 }
 
-func Update(d *Static) {
-	d.CpuName = "E5-2660"
+func Update(d *Static) error {
+	cpuNamech := make(chan string)
+	errch := make(chan error)
+
+	go getCpuModel(cpuNamech, errch)
+
+	d.CpuName = <-cpuNamech
 	d.MemTotal = 15.55
 	d.DiskTotal = 223
 	d.DistroName = "Arch Linux"
 	d.HostName = "sfome"
+
+	err := <-errch
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

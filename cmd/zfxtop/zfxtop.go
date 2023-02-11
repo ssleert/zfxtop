@@ -84,10 +84,13 @@ func main() {
 	datastat := &s.DataStat
 
 	updateAll := func() {
-		data.Update(datastat)
+		err := data.Update(datastat)
+		if err != nil {
+			msg.ExitMsg(err)
+		}
 		buf := s.Static()
 		fmt.Print(buf)
-		err := d.Update(datadyn)
+		err = d.Update(datadyn)
 		if err != nil {
 			msg.ExitMsg(err)
 		}
