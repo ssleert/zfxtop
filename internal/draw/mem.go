@@ -1,9 +1,9 @@
 package draw
 
-// import (
-// "fmt"
-// "github.com/ssleert/sterm"
-// )
+import (
+	"fmt"
+	"github.com/ssleert/sterm"
+)
 
 // draw static info for bat block
 func (s *Info) memStatic() {
@@ -17,6 +17,7 @@ func (s *Info) memStatic() {
 	s.putStr(6, s.y+18, "Available")
 	s.putStr(6, s.y+24, "Free")
 
+	s.putStr(27, s.y+11, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
 }
 
 // draw dynamic info for bat block

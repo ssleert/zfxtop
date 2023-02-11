@@ -3,8 +3,11 @@ package data
 // os depent functions
 
 import (
+	"github.com/ssleert/memory"
 	"github.com/ssleert/sfolib"
+	"os"
 	"strings"
+	"syscall"
 )
 
 // +================= static info functions =================+
@@ -15,8 +18,9 @@ func getCpuModel(ch chan string, errch chan error) {
 
 	s, err := sfolib.ReadLines("/proc/cpuinfo", 5)
 	if err != nil {
-		ch <- ""
 		errch <- err
+		ch <- ""
+		return
 	}
 
 	cpuName := strings.Fields(s[4])[3:]
@@ -71,9 +75,80 @@ func getCpuModel(ch chan string, errch chan error) {
 			result.WriteString("INTEL")
 		}
 	}
+	if result.Len() == 0 {
+		result.WriteString("UNKNOWN")
+	}
 
-	ch <- result.String()
 	errch <- err
+	ch <- result.String()
+}
+
+func getMemTotal(ch chan float64, errch chan error) {
+	sd, err := memory.GetTotalRam()
+	if err != nil {
+		errch <- err
+		ch <- 0
+		return
+	}
+
+	errch <- err
+	ch <- float64(sd) / 1024
+}
+
+func getDiskSize(ch chan float64, errch chan error) {
+	var stat syscall.Statfs_t
+	err := syscall.Statfs("/", &stat)
+	if err != nil {
+		errch <- err
+		ch <- 0
+		return
+	}
+	result := float64(stat.Bsize*int64(stat.Blocks)/1024/1024) / 1024
+
+	errch <- nil
+	ch <- result
+}
+
+func getDistroName(ch chan string, errch chan error) {
+	rls := [...][2]string{
+		{"/etc/os-release", "NAME"},
+		{"/etc/lsb-release", "DISTRIB_DESCRIPTION"},
+	}
+
+	var result string
+	for _, e := range rls {
+		if sfolib.Exists(e[0]) {
+			s, err := getValue(e[0], e[1])
+			if err != nil {
+				errch <- err
+				ch <- ""
+				return
+			}
+			result = s[1 : len(s)-1]
+		}
+	}
+	if result == "" {
+		result = "UNKNOWN"
+	}
+
+	errch <- nil
+	ch <- result
+}
+
+func getHostName(ch chan string, errch chan error) {
+	result := os.Getenv("hostname")
+	if result == "" {
+		var err error
+		result, err = sfolib.ReadFirstLine("/etc/hostname")
+		if err != nil {
+			errch <- err
+			ch <- ""
+			return
+		}
+	}
+
+	errch <- nil
+	ch <- result
 }
 
 // +=========================================================+

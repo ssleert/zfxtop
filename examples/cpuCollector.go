@@ -81,6 +81,9 @@ func getCpuModel(f string) (string, error) {
 			result.WriteString("INTEL")
 		}
 	}
+	if result.Len() == 0 {
+		result.WriteString("UNKNOWN")
+	}
 
 	return result.String(), err
 }

@@ -61,7 +61,7 @@ type Static struct {
 	MemTotal float64
 
 	// static disk frame info
-	DiskTotal int
+	DiskTotal float64
 
 	// static info frame info
 	DistroName string
@@ -142,15 +142,15 @@ func startPool(start chan struct{}, n int) {
 	}
 }
 
-func handleErr(errch chan error, n int) error {
+func handleErr(errch chan error, n int) (err error) {
 	for i := 0; i < n; i++ {
-		err := <-errch
-		if err != nil {
-			return err
-		}
+		err = <-errch
+	}
+	if err != nil {
+		return
 	}
 
-	return nil
+	return
 }
 
 func (p *pool) Update(d *Dynamic) error {
@@ -168,20 +168,28 @@ func (p *pool) Update(d *Dynamic) error {
 
 func Update(d *Static) error {
 	cpuNamech := make(chan string)
+	memTotalch := make(chan float64)
+	diskTotalch := make(chan float64)
+	distroNamech := make(chan string)
+	hostNamech := make(chan string)
 	errch := make(chan error)
 
 	go getCpuModel(cpuNamech, errch)
+	go getMemTotal(memTotalch, errch)
+	go getDiskSize(diskTotalch, errch)
+	go getDistroName(distroNamech, errch)
+	go getHostName(hostNamech, errch)
 
-	d.CpuName = <-cpuNamech
-	d.MemTotal = 15.55
-	d.DiskTotal = 223
-	d.DistroName = "Arch Linux"
-	d.HostName = "sfome"
-
-	err := <-errch
+	err := handleErr(errch, 5)
 	if err != nil {
 		return err
 	}
+
+	d.CpuName = <-cpuNamech
+	d.MemTotal = <-memTotalch
+	d.DiskTotal = <-diskTotalch
+	d.DistroName = <-distroNamech
+	d.HostName = <-hostNamech
 
 	return nil
 }
