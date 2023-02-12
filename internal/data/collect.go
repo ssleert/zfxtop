@@ -201,21 +201,15 @@ func getCPUSample() (int, int, error) {
 }
 
 func getCpuLoad(ch chan int, errch chan error) {
-	var (
-		idle0, idle1   int
-		total0, total1 int
-		err            error
-	)
-
 	for {
-		idle0, total0, err = getCPUSample()
+		idle0, total0, err := getCPUSample()
 		if err != nil {
 			errch <- err
 			ch <- 0
 			return
 		}
 		time.Sleep(100 * time.Millisecond)
-		idle1, total1, err = getCPUSample()
+		idle1, total1, err := getCPUSample()
 		if err != nil {
 			errch <- err
 			ch <- 0
@@ -226,7 +220,9 @@ func getCpuLoad(ch chan int, errch chan error) {
 		totalTicks := float64(total1 - total0)
 
 		errch <- nil
-		load := int(math.Round((100 * (totalTicks - idleTicks) / totalTicks) * 0.9))
+		load := int(math.Round(
+			100 * (((totalTicks - idleTicks) / totalTicks) * 0.7),
+		))
 		if load < 0 || load > 100 {
 			errch <- errors.New("cpu load is higher than 100%")
 			ch <- 0

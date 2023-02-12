@@ -62,7 +62,7 @@ func parseTui(ini *ginip.Ini) error {
 	if err != nil {
 		return err
 	}
-	if conf.(int) > 100 {
+	if conf.(int) > 110 {
 		Update = time.Duration(conf.(int)) * time.Millisecond
 	}
 

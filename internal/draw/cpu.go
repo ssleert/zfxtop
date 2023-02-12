@@ -26,7 +26,7 @@ func (s *Info) cpuDynamic() {
 	s.tui.WriteRune(' ')
 
 	s.tui.WriteString(s.colorFaint)
-	buf, _ := sterm.CharArea(6, s.y+3, 64, s.y+9, ' ')
+	buf, _ := sterm.CharArea(' ', 6, s.y+3, 64, s.y+9)
 	s.tui.WriteString(buf)
 	buf, _ = sterm.FrameArea(s.borders, 6, s.y+3, 20, s.y+7)
 	s.tui.WriteString(buf)
