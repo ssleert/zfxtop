@@ -1,0 +1,14 @@
+processor	: 0
+vendor_id	: AuthenticAMD
+cpu family	: 21
+model		: 2
+model name	: AMD FX(tm)-8300 Eight-Core Processor
+stepping	: 0
+microcode	: 0x6000852
+cpu MHz		: 3692.867
+cache size	: 2048 KB
+physical id	: 0
+siblings	: 8
+core id		: 0
+cpu cores	: 4
+apicid		: 16

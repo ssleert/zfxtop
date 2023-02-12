@@ -21,9 +21,9 @@ func getValue(s string, v string) (string, error) {
 	return r, nil
 }
 
-func GetTimeNow(start chan struct{}, err chan error, ch chan time.Time) {
-	for range start {
-		ch <- time.Now()
+func GetTimeNow(ch chan time.Time, err chan error) {
+	for {
 		err <- nil
+		ch <- time.Now()
 	}
 }

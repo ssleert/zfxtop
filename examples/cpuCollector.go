@@ -17,6 +17,8 @@ var (
 		"assets/cpuinfos/cpuinfo8",
 		"assets/cpuinfos/cpuinfo9",
 		"assets/cpuinfos/cpuinfo10",
+		"assets/cpuinfos/cpuinfo11",
+		"assets/cpuinfos/cpuinfo12",
 	}
 )
 
@@ -41,11 +43,20 @@ func getCpuModel(f string) (string, error) {
 				result.WriteRune('-')
 				result.WriteString(cpuName[3])
 				break
+			case strings.Contains(e, "FX"):
+				result.WriteString("FX-")
+				result.WriteString(strings.Split(e, "-")[1])
+				break
+			case strings.Contains(e, "Athlon"):
+				result.WriteString("Athlon ")
+				result.WriteString(cpuName[2])
+				break
 			case strings.Contains(e, "Turion"):
 				result.WriteString("Turion ")
 				result.WriteString(cpuName[2])
 				result.WriteRune(' ')
 				result.WriteString(cpuName[3])
+				break
 			}
 		}
 		if result.Len() == 0 {

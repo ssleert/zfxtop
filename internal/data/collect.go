@@ -3,11 +3,15 @@ package data
 // os depent functions
 
 import (
+	"errors"
 	"github.com/ssleert/memory"
 	"github.com/ssleert/sfolib"
+	"math"
 	"os"
+	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 // +================= static info functions =================+
@@ -35,11 +39,20 @@ func getCpuModel(ch chan string, errch chan error) {
 				result.WriteRune('-')
 				result.WriteString(cpuName[3])
 				break
+			case strings.Contains(e, "FX"):
+				result.WriteString("FX-")
+				result.WriteString(strings.Split(e, "-")[1])
+				break
+			case strings.Contains(e, "Athlon"):
+				result.WriteString("Athlon ")
+				result.WriteString(cpuName[2])
+				break
 			case strings.Contains(e, "Turion"):
 				result.WriteString("Turion ")
 				result.WriteString(cpuName[2])
 				result.WriteRune(' ')
 				result.WriteString(cpuName[3])
+				break
 			}
 		}
 		if result.Len() == 0 {
@@ -149,6 +162,85 @@ func getHostName(ch chan string, errch chan error) {
 
 	errch <- nil
 	ch <- result
+}
+
+// +=========================================================+
+
+// +================ dynamic info functions =================+
+
+// get cpu ticks sample
+// used in getCpuLoad
+func getCPUSample() (int, int, error) {
+	lines, err := sfolib.LoadFile("/proc/stat")
+	if err != nil {
+		return 0, 0, err
+	}
+
+	var (
+		total int
+		idle  int
+	)
+	for _, line := range lines {
+		fields := strings.Fields(line)
+		if fields[0] == "cpu" {
+			numFields := len(fields)
+			for i := 1; i < numFields; i++ {
+				val, err := strconv.Atoi(fields[i])
+				if err != nil {
+					return 0, 0, err
+				}
+				total += val
+				if i == 4 {
+					idle = val
+				}
+			}
+			return idle, total, nil
+		}
+	}
+	panic("unreachable")
+}
+
+func getCpuLoad(ch chan int, errch chan error) {
+	var (
+		idle0, idle1   int
+		total0, total1 int
+		err            error
+	)
+
+	for {
+		idle0, total0, err = getCPUSample()
+		if err != nil {
+			errch <- err
+			ch <- 0
+			return
+		}
+		time.Sleep(100 * time.Millisecond)
+		idle1, total1, err = getCPUSample()
+		if err != nil {
+			errch <- err
+			ch <- 0
+			return
+		}
+
+		idleTicks := float64(idle1 - idle0)
+		totalTicks := float64(total1 - total0)
+
+		errch <- nil
+		load := int(math.Round(100 * (totalTicks - idleTicks) / totalTicks))
+		if load < 0 || load > 100 {
+			errch <- errors.New("cpu load is higher than 100%")
+			ch <- 0
+			return
+		}
+		ch <- load
+
+		idle0, total0, err = getCPUSample()
+		if err != nil {
+			errch <- err
+			ch <- 0
+			return
+		}
+	}
 }
 
 // +=========================================================+

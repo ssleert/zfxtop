@@ -1,0 +1,12 @@
+processor	: 0
+vendor_id	: AuthenticAMD
+cpu family	: 23
+model		: 24
+model name	: AMD Athlon 3000G with Radeon Vega Graphics
+stepping	: 1
+microcode	: 0x8108109
+cpu MHz		: 2300.000
+cache size	: 512 KB
+physical id	: 0
+siblings	: 4
+core id		: 0

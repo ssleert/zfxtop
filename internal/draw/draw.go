@@ -92,6 +92,14 @@ func (s *Info) Stop() {
 	sterm.Restore(s.s)
 }
 
+func (s *Info) Redraw() string {
+	var buf strings.Builder
+	buf.WriteString(sterm.ClearScreenDown())
+	buf.WriteString(s.Static())
+	buf.WriteString(s.Dynamic())
+	return buf.String()
+}
+
 // draw static info
 // executes on program start
 // or on redraw

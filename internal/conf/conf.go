@@ -11,7 +11,7 @@ import (
 
 var (
 	// time between updates
-	Update     = 100 * time.Millisecond
+	Update     = 110 * time.Millisecond
 	Icons      = true
 	Borders    = sterm.RoundedBorders
 	Colors     = true
@@ -62,7 +62,9 @@ func parseTui(ini *ginip.Ini) error {
 	if err != nil {
 		return err
 	}
-	Update = time.Duration(conf.(int)) * time.Millisecond
+	if conf.(int) > 100 {
+		Update = time.Duration(conf.(int)) * time.Millisecond
+	}
 
 	conf, err = ini.GetValueBool(sect, iconsVar)
 	if err != nil {

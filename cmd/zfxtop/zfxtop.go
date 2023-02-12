@@ -83,23 +83,32 @@ func main() {
 	datadyn := &s.DataDyn
 	datastat := &s.DataStat
 
+	exitFromDraw := func(err error) {
+		s.Stop()
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	updateAll := func() {
 		err := data.Update(datastat)
 		if err != nil {
-			msg.ExitMsg(err)
+			exitFromDraw(err)
+		}
+		err = d.Update(datadyn)
+		if err != nil {
+			exitFromDraw(err)
 		}
 		buf := s.Static()
 		fmt.Print(buf)
-		err = d.Update(datadyn)
-		if err != nil {
-			msg.ExitMsg(err)
-		}
 		buf = s.Dynamic()
 		fmt.Print(buf)
 	}
 
 	updateDyn := func() {
-		d.Update(datadyn)
+		err := d.Update(datadyn)
+		if err != nil {
+			exitFromDraw(err)
+		}
 		buf := s.Dynamic()
 		fmt.Print(buf)
 	}
@@ -116,7 +125,7 @@ func main() {
 				s.Stop()
 				os.Exit(0)
 			case 'r', 'R', 'к', 'К':
-				updateAll()
+				fmt.Print(s.Redraw())
 			default:
 				continue
 			}

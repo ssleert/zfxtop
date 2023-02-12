@@ -13,10 +13,40 @@ func (s *Info) cpuStatic() {
 
 // draw dynamic info for bat block
 func (s *Info) cpuDynamic() {
+	var (
+		load = iconed{s.colorList[2], "", "load"}
+		freq = iconed{s.colorList[1], "龍", "fr"}
+		temp = iconed{s.colorList[0], "", "temp"}
+	)
+
 	s.reset()
 	s.tui.WriteString(sterm.CursorTo(30, s.y+2))
 	s.tui.WriteRune(' ')
 	s.tui.WriteString(s.DataDyn.Time.Format("15:04:05"))
 	s.tui.WriteRune(' ')
-	return
+
+	s.tui.WriteString(s.colorFaint)
+	buf, _ := sterm.CharArea(6, s.y+3, 64, s.y+9, ' ')
+	s.tui.WriteString(buf)
+	buf, _ = sterm.FrameArea(s.borders, 6, s.y+3, 20, s.y+7)
+	s.tui.WriteString(buf)
+
+	s.writeIconed(8, s.y+4, &load)
+
+	// nerd fonts FUCK YOU
+	// s.writeIconed(8, s.y+5, &freq)
+	// '龍' icon weight is bigger than normal char
+
+	s.tui.WriteString(sterm.CursorTo(8, s.y+5))
+	s.tui.WriteString(freq[0])
+	s.tui.WriteString(freq[1])
+	s.reset()
+	s.tui.WriteString(freq[2])
+
+	// -------------------------------------------
+
+	s.writeIconed(8, s.y+6, &temp)
+
+	s.tui.WriteString(sterm.CursorTo(18, s.y+4))
+	s.tui.WriteString(sterm.RevPrint(fmt.Sprintf("%d%%", s.DataDyn.CpuLoad)))
 }

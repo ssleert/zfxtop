@@ -52,26 +52,9 @@ type Dynamic struct {
 	BatCharge int
 	BatLife   time.Duration
 }
-type Static struct {
-	// static mem frame info
-
-	CpuName string
-
-	// static mem frame info
-	MemTotal float64
-
-	// static disk frame info
-	DiskTotal float64
-
-	// static info frame info
-	DistroName string
-	HostName   string
-}
 
 // data channels for goroutines pool
 type pool struct {
-	start chan struct{}
-
 	// time on top
 	time chan time.Time
 
@@ -122,24 +105,35 @@ type pool struct {
 	n   int
 }
 
+type Static struct {
+	// static mem frame info
+
+	CpuName string
+
+	// static mem frame info
+	MemTotal float64
+
+	// static disk frame info
+	DiskTotal float64
+
+	// static info frame info
+	DistroName string
+	HostName   string
+}
+
 // start goroutines for data collections
 func Start() *pool {
 	pool := pool{
-		start: make(chan struct{}),
-		time:  make(chan time.Time),
-		err:   make(chan error),
-		n:     1,
+		time:    make(chan time.Time),
+		cpuLoad: make(chan int),
+		err:     make(chan error),
+		n:       2,
 	}
 
-	go GetTimeNow(pool.start, pool.err, pool.time)
+	go GetTimeNow(pool.time, pool.err)
+	go getCpuLoad(pool.cpuLoad, pool.err)
 
 	return &pool
-}
-
-func startPool(start chan struct{}, n int) {
-	for i := 0; i < n; i++ {
-		start <- struct{}{}
-	}
 }
 
 func handleErr(errch chan error, n int) (err error) {
@@ -154,14 +148,13 @@ func handleErr(errch chan error, n int) (err error) {
 }
 
 func (p *pool) Update(d *Dynamic) error {
-	startPool(p.start, p.n)
-
-	d.Time = <-p.time
-
 	err := handleErr(p.err, p.n)
 	if err != nil {
 		return err
 	}
+
+	d.Time = <-p.time
+	d.CpuLoad = <-p.cpuLoad
 
 	return nil
 }
