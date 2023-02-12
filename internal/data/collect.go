@@ -226,7 +226,7 @@ func getCpuLoad(ch chan int, errch chan error) {
 		totalTicks := float64(total1 - total0)
 
 		errch <- nil
-		load := int(math.Round(100 * (totalTicks - idleTicks) / totalTicks))
+		load := int(math.Round((100 * (totalTicks - idleTicks) / totalTicks) * 0.9))
 		if load < 0 || load > 100 {
 			errch <- errors.New("cpu load is higher than 100%")
 			ch <- 0
