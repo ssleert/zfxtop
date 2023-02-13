@@ -80,7 +80,12 @@ func getCpuModel(ch chan string, errch chan error) {
 				break
 			case strings.Contains(e, "Pentium"):
 				result.WriteString("Pentium ")
-				result.WriteString(cpuName[2])
+				switch cpuName[2] {
+				case "D", "1", "2", "3", "4":
+					result.WriteString(cpuName[2])
+				case "CPU":
+					result.WriteString(cpuName[3])
+				}
 				break
 			}
 		}
@@ -105,7 +110,7 @@ func getMemTotal(ch chan float64, errch chan error) {
 	}
 
 	errch <- err
-	ch <- float64(sd) / 1024
+	ch <- float64(sd) / 1048576
 }
 
 func getDiskSize(ch chan float64, errch chan error) {
@@ -116,7 +121,7 @@ func getDiskSize(ch chan float64, errch chan error) {
 		ch <- 0
 		return
 	}
-	result := float64(stat.Bsize*int64(stat.Blocks)/1024/1024) / 1024
+	result := float64(stat.Bsize*int64(stat.Blocks)/1048576) / 1024
 
 	errch <- nil
 	ch <- result
@@ -183,14 +188,13 @@ func getCPUSample() (int, int, error) {
 	for _, line := range lines {
 		fields := strings.Fields(line)
 		if fields[0] == "cpu" {
-			numFields := len(fields)
-			for i := 1; i < numFields; i++ {
-				val, err := strconv.Atoi(fields[i])
+			for i, e := range fields[1:] {
+				val, err := strconv.Atoi(e)
 				if err != nil {
 					return 0, 0, err
 				}
 				total += val
-				if i == 4 {
+				if i == 3 {
 					idle = val
 				}
 			}
@@ -201,14 +205,16 @@ func getCPUSample() (int, int, error) {
 }
 
 func getCpuLoad(ch chan int, errch chan error) {
+	idle0, total0, err := getCPUSample()
+	if err != nil {
+		errch <- err
+		ch <- 0
+		return
+	}
+
 	for {
-		idle0, total0, err := getCPUSample()
-		if err != nil {
-			errch <- err
-			ch <- 0
-			return
-		}
 		time.Sleep(100 * time.Millisecond)
+
 		idle1, total1, err := getCPUSample()
 		if err != nil {
 			errch <- err
@@ -219,15 +225,15 @@ func getCpuLoad(ch chan int, errch chan error) {
 		idleTicks := float64(idle1 - idle0)
 		totalTicks := float64(total1 - total0)
 
-		errch <- nil
 		load := int(math.Round(
-			100 * (((totalTicks - idleTicks) / totalTicks) * 0.7),
+			100 * ((totalTicks - idleTicks) / totalTicks),
 		))
 		if load < 0 || load > 100 {
 			errch <- errors.New("cpu load is higher than 100%")
 			ch <- 0
 			return
 		}
+		errch <- nil
 		ch <- load
 
 		idle0, total0, err = getCPUSample()
@@ -237,6 +243,45 @@ func getCpuLoad(ch chan int, errch chan error) {
 			return
 		}
 	}
+}
+
+func getCpuFreq(ch chan float64, errch chan error) {
+	for {
+		lines, err := sfolib.LoadFile("/proc/cpuinfo")
+		if err != nil {
+			errch <- err
+			ch <- 0
+			return
+		}
+
+		var (
+			cores int
+			freq  float64
+		)
+		for _, line := range lines {
+			if strings.HasPrefix(line, "cpu MHz") {
+				s := strings.Fields(line)
+				sd, err := strconv.ParseFloat(s[3], 64)
+				if err != nil {
+					errch <- err
+					ch <- 0
+					return
+				}
+
+				freq += sd
+				cores++
+			}
+		}
+
+		result := freq / float64(cores) / 1000
+
+		errch <- nil
+		ch <- result
+	}
+}
+
+func getCpuTemp(ch chan int, errch chan error) {
+	return
 }
 
 // +=========================================================+

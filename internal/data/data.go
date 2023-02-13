@@ -126,12 +126,14 @@ func Start() *pool {
 	pool := pool{
 		time:    make(chan time.Time),
 		cpuLoad: make(chan int),
+		cpuFreq: make(chan float64),
 		err:     make(chan error),
-		n:       2,
+		n:       3,
 	}
 
 	go GetTimeNow(pool.time, pool.err)
 	go getCpuLoad(pool.cpuLoad, pool.err)
+	go getCpuFreq(pool.cpuFreq, pool.err)
 
 	return &pool
 }
@@ -155,6 +157,7 @@ func (p *pool) Update(d *Dynamic) error {
 
 	d.Time = <-p.time
 	d.CpuLoad = <-p.cpuLoad
+	d.CpuFreq = <-p.cpuFreq
 
 	return nil
 }

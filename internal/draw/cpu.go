@@ -3,6 +3,7 @@ package draw
 import (
 	"fmt"
 	"github.com/ssleert/sterm"
+	"strconv"
 )
 
 // draw static info for bat block
@@ -48,5 +49,16 @@ func (s *Info) cpuDynamic() {
 	s.writeIconed(8, s.y+6, &temp)
 
 	s.tui.WriteString(sterm.CursorTo(18, s.y+4))
-	s.tui.WriteString(sterm.RevPrint(fmt.Sprintf("%d%%", s.DataDyn.CpuLoad)))
+	s.tui.WriteString(s.colorMid)
+	s.tui.WriteRune('%')
+	s.tui.WriteString(sterm.CursorLeft(2))
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.CpuLoad))
+	s.tui.WriteString(sterm.RevPrint(" " + strconv.Itoa(s.DataDyn.CpuLoad)))
+
+	s.tui.WriteString(sterm.CursorTo(16, s.y+5))
+	s.tui.WriteString(s.colorMid)
+	s.tui.WriteString("ghz")
+	s.tui.WriteString(sterm.CursorLeft(4))
+	s.tui.WriteString(colorForFreq(&s.colorTempr, s.DataDyn.CpuFreq))
+	s.tui.WriteString(sterm.RevPrint(fmt.Sprintf("%.1f", s.DataDyn.CpuFreq)))
 }

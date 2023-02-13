@@ -89,6 +89,7 @@ func (s *Info) Stop() {
 	fmt.Print(sterm.CursorShow())
 	fmt.Print(sterm.CursorTo(1, s.y+1))
 	fmt.Print(sterm.ClearScreenDown())
+	fmt.Print(sterm.Reset)
 	sterm.Restore(s.s)
 }
 
