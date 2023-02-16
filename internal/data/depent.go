@@ -24,7 +24,6 @@ func getCpuModel(ch chan string, errch chan error) {
 	if err != nil {
 		errch <- err
 		ch <- ""
-		return
 	}
 
 	cpuName := strings.Fields(s[4])[3:]
@@ -106,7 +105,6 @@ func getMemTotal(ch chan float64, errch chan error) {
 	if err != nil {
 		errch <- err
 		ch <- 0
-		return
 	}
 
 	errch <- err
@@ -119,7 +117,6 @@ func getDiskSize(ch chan float64, errch chan error) {
 	if err != nil {
 		errch <- err
 		ch <- 0
-		return
 	}
 	result := float64(stat.Bsize*int64(stat.Blocks)/1048576) / 1024
 
@@ -140,7 +137,6 @@ func getDistroName(ch chan string, errch chan error) {
 			if err != nil {
 				errch <- err
 				ch <- ""
-				return
 			}
 			result = s[1 : len(s)-1]
 		}
@@ -161,7 +157,6 @@ func getHostName(ch chan string, errch chan error) {
 		if err != nil {
 			errch <- err
 			ch <- ""
-			return
 		}
 	}
 
@@ -209,7 +204,6 @@ func getCpuLoad(ch chan int, errch chan error) {
 	if err != nil {
 		errch <- err
 		ch <- 0
-		return
 	}
 
 	for {
@@ -219,7 +213,6 @@ func getCpuLoad(ch chan int, errch chan error) {
 		if err != nil {
 			errch <- err
 			ch <- 0
-			return
 		}
 
 		idleTicks := float64(idle1 - idle0)
@@ -231,7 +224,6 @@ func getCpuLoad(ch chan int, errch chan error) {
 		if load < 0 || load > 100 {
 			errch <- errors.New("cpu load is higher than 100%")
 			ch <- 0
-			return
 		}
 		errch <- nil
 		ch <- load
@@ -240,7 +232,6 @@ func getCpuLoad(ch chan int, errch chan error) {
 		if err != nil {
 			errch <- err
 			ch <- 0
-			return
 		}
 	}
 }
@@ -251,7 +242,6 @@ func getCpuFreq(ch chan float64, errch chan error) {
 		if err != nil {
 			errch <- err
 			ch <- 0
-			return
 		}
 
 		var (
@@ -265,7 +255,6 @@ func getCpuFreq(ch chan float64, errch chan error) {
 				if err != nil {
 					errch <- err
 					ch <- 0
-					return
 				}
 
 				freq += sd
@@ -281,7 +270,101 @@ func getCpuFreq(ch chan float64, errch chan error) {
 }
 
 func getCpuTemp(ch chan int, errch chan error) {
-	return
+	var (
+		isCoreTemp  bool
+		coreTempDir string
+		// coreTemp    int
+	)
+
+	hwms, err := os.ReadDir("/sys/class/hwmon")
+	if err != nil {
+		errch <- err
+		ch <- 0
+	}
+	for _, e := range hwms {
+		hwmn := "/sys/class/hwmon/" + e.Name() + "/"
+		f, err := os.ReadFile(hwmn + "name")
+		if err != nil {
+			errch <- err
+			ch <- 0
+		}
+		if string(f) == "coretemp\n" {
+			isCoreTemp = true
+			coreTempDir = hwmn
+		}
+	}
+
+	if isCoreTemp {
+		d, err := os.ReadDir(coreTempDir)
+		if err != nil {
+			errch <- err
+			ch <- 0
+		}
+
+		for {
+			var (
+				temp  int
+				count float64
+			)
+			for _, e := range d {
+				fn := e.Name()
+				if strings.HasPrefix(fn, "temp") && strings.HasSuffix(fn, "_input") {
+					f, err := os.ReadFile(coreTempDir + fn)
+					if err != nil {
+						errch <- err
+						ch <- 0
+					}
+					t, err := strconv.Atoi(string(f[:len(f)-1]))
+					if err != nil {
+						errch <- err
+						ch <- 0
+					}
+					temp += t
+					count++
+				}
+			}
+			errch <- nil
+			ch <- int(math.Round(float64(temp)/count)) / 1000
+		}
+	}
+
+	for {
+		errch <- nil
+		ch <- 0
+	}
+}
+
+func getMem(memch chan memoryInfo, errch chan error) {
+	totalint, err := memory.GetTotalRam()
+	if err != nil {
+		errch <- err
+		memch <- memoryInfo{}
+	}
+	total := float64(totalint)
+
+	for {
+		ram, err := memory.GetRam()
+		if err != nil {
+			errch <- err
+			memch <- memoryInfo{}
+		}
+
+		errch <- nil
+		memch <- memoryInfo{
+			Used: (total - float64(ram.Available)) / 1048576,
+			UsedPerc: int(math.Round(
+				((total - float64(ram.Available)) / total) * 100,
+			)),
+			Available: float64(ram.Available) / 1048576,
+			AvailablePerc: int(math.Round(
+				float64(ram.Available) / total * 100,
+			)),
+			Free: float64(ram.Free) / 1048576,
+			FreePerc: int(math.Round(
+				float64(ram.Free) / total * 100,
+			)),
+		}
+	}
 }
 
 // +=========================================================+

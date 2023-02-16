@@ -39,7 +39,8 @@ func (s *Info) putStr(x, y int, str string) {
 
 func (s *Info) writeIconed(x, y int, d *iconed) {
 	s.tui.WriteString(sterm.CursorTo(x, y))
-	writeIcon(&s.tui, d[0], d[1], sterm.Reset, " ")
+	writeIcon(&s.tui, d[0], d[1], " ")
+	s.tui.WriteString(sterm.Reset)
 	s.tui.WriteString(d[2])
 }
 
@@ -124,6 +125,7 @@ func (s *Info) Static() string {
 func (s *Info) Dynamic() string {
 	s.tui.Reset()
 	s.cpuDynamic()
+	s.memDynamic()
 
 	return s.tui.String()
 }

@@ -9,7 +9,7 @@ import (
 // draw static info for bat block
 func (s *Info) cpuStatic() {
 	s.reset()
-	s.putStr(64, s.y+2, sterm.RevPrint(fmt.Sprintf(" %s ", s.DataStat.CpuName)))
+	s.putStr(64, s.y+2, sterm.RevPrint(" "+s.DataStat.CpuName+" "))
 }
 
 // draw dynamic info for bat block
@@ -39,9 +39,11 @@ func (s *Info) cpuDynamic() {
 	// '龍' icon weight is bigger than normal char
 
 	s.tui.WriteString(sterm.CursorTo(8, s.y+5))
-	s.tui.WriteString(freq[0])
-	s.tui.WriteString(freq[1])
-	s.reset()
+	if s.icons {
+		s.tui.WriteString(freq[0])
+		s.tui.WriteString(freq[1])
+		s.reset()
+	}
 	s.tui.WriteString(freq[2])
 
 	// -------------------------------------------
@@ -61,4 +63,11 @@ func (s *Info) cpuDynamic() {
 	s.tui.WriteString(sterm.CursorLeft(4))
 	s.tui.WriteString(colorForFreq(&s.colorTempr, s.DataDyn.CpuFreq))
 	s.tui.WriteString(sterm.RevPrint(fmt.Sprintf("%.1f", s.DataDyn.CpuFreq)))
+
+	s.tui.WriteString(sterm.CursorTo(17, s.y+6))
+	s.tui.WriteString(s.colorMid)
+	s.tui.WriteString("°C")
+	s.tui.WriteString(sterm.CursorLeft(3))
+	s.tui.WriteString(colorForTemp(&s.colorTempr, s.DataDyn.CpuTemp))
+	s.tui.WriteString(sterm.RevPrint(strconv.Itoa(s.DataDyn.CpuTemp)))
 }

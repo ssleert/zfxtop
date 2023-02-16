@@ -12,6 +12,8 @@ github.com/ssleert/sterm v0.0.0-20230212211717-b06219b2057d h1:OOIhkchjCc+MnHQIy
 github.com/ssleert/sterm v0.0.0-20230212211717-b06219b2057d/go.mod h1:1hevX7HxfH0JGmY0ogg7HpWBPGUpF48Ef5F2sGbSuJk=
 github.com/ssleert/sterm v0.0.0-20230212212335-5900e034f674 h1:5jXVNKllpJuelKeye2GxfX0pmWYnqKnFjNdiYmu1nZs=
 github.com/ssleert/sterm v0.0.0-20230212212335-5900e034f674/go.mod h1:bVZzi9tuQ8EOgtaHC53nCoUFCwBLLRVtCm9+DRwpcG8=
+github.com/ssleert/sterm v0.0.0-20230212222435-168aab76b00a h1:CnB51PeY4DrMf0rByEfFoZX78zPK1DsXqQWnTaCstTw=
+github.com/ssleert/sterm v0.0.0-20230212222435-168aab76b00a/go.mod h1:bVZzi9tuQ8EOgtaHC53nCoUFCwBLLRVtCm9+DRwpcG8=
 golang.org/x/sys v0.5.0 h1:MUK/U/4lj1t1oPg0HfuXDN/Z1wv31ZJ/YcPiGccS4DU=
 golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.4.0 h1:O7UWfv5+A2qiuulQk30kVinPoMtoIPeVaKLEgLpVkvg=

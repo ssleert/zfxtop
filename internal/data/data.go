@@ -4,53 +4,67 @@ import (
 	"time"
 )
 
+// mem frame info
+type memoryInfo struct {
+	Used      float64
+	UsedPerc  int
+	UsedGraph []int
+
+	Available      float64
+	AvailablePerc  int
+	AvailableGraph []int
+
+	Free      float64
+	FreePerc  int
+	FreeGraph []int
+
+	// swap frame info
+	SwapTotal      float64
+	SwapTotalPerc  int
+	SwapTotalGraph []int
+
+	SwapFree      float64
+	SwapFreePerc  int
+	SwapFreeGraph []int
+}
+
+// disk frame info
+type diskInfo struct {
+	RootUsed     float64
+	RootUsedPerc int
+
+	HomeUsed     float64
+	HomeUsedPerc int
+
+	UsrUsed     float64
+	UsrUsedPerc int
+}
+
+// battery frame info
+type batInfo struct {
+	BatCharge int
+	BatLife   time.Duration
+}
+
 // data struct for dynamic data updates
 type Dynamic struct {
 	// time on top
 	Time time.Time
 
 	// cpu frame info
+
+	// why not make another type for cpu info?
+	// coz, frequency and temperature find very different values.
+	// and don't depend on each other
 	CpuLoad      int
 	CpuLoadGraph []int
 
 	CpuFreq float64
 	CpuTemp int
 
-	// mem fram info
-	MemUsed      float64
-	MemUsedProc  int
-	MemUsedGraph []int
-
-	MemAvailable      float64
-	MemAvailableProc  int
-	MemAvailableGraph []int
-
-	MemFree      float64
-	MemfreeProc  int
-	MemFreeGraph []int
-
-	// swap frame info
-	SwapTotal      float64
-	SwapTotalProc  int
-	SwapTotalGraph []int
-
-	SwapFree      float64
-	SwapFreeProc  int
-	SwapFreeGraph []int
-
-	// disk frame info
-	DiskRootUsed     float64
-	DiskRootUsedProc int
-
-	DiskHomeUsed     float64
-	DiskHomeUsedProc int
-
-	DiskUsrUsed     float64
-	DiskUsrUsedProc int
-
-	// battery frame info
-	BatCharge int
-	BatLife   time.Duration
+	Mem  memoryInfo
+	Disk memoryInfo
+	Bat  batInfo
 }
 
 // data channels for goroutines pool
@@ -65,41 +79,9 @@ type pool struct {
 	cpuFreq chan float64
 	cpuTemp chan int
 
-	// mem frame info
-	memUsed      chan float64
-	memUsedProc  chan int
-	MemUsedGraph chan []int
-
-	memAvailable      chan float64
-	memAvailableProc  chan int
-	memAvailableGraph chan []int
-
-	memFree      chan float64
-	memfreeProc  chan int
-	memFreeGraph chan []int
-
-	// swap frame info
-	swapTotal      chan float64
-	swapTotalProc  chan int
-	swapTotalGraph chan []int
-
-	swapFree      chan float64
-	swapFreeProc  chan int
-	swapFreeGraph chan []int
-
-	// disk frame info
-	diskRootUsed     chan float64
-	diskRootUsedProc chan int
-
-	diskHomeUsed     chan float64
-	diskHomeUsedProc chan int
-
-	diskUsrUsed     chan float64
-	diskUsrUsedProc chan int
-
-	// battery frame info
-	batCharge chan int
-	batLife   chan time.Duration
+	mem  chan memoryInfo
+	disk chan memoryInfo
+	bat  chan batInfo
 
 	err chan error
 	n   int
@@ -107,7 +89,6 @@ type pool struct {
 
 type Static struct {
 	// static mem frame info
-
 	CpuName string
 
 	// static mem frame info
@@ -127,13 +108,17 @@ func Start() *pool {
 		time:    make(chan time.Time),
 		cpuLoad: make(chan int),
 		cpuFreq: make(chan float64),
+		cpuTemp: make(chan int),
+		mem:     make(chan memoryInfo),
 		err:     make(chan error),
-		n:       3,
+		n:       5,
 	}
 
 	go GetTimeNow(pool.time, pool.err)
 	go getCpuLoad(pool.cpuLoad, pool.err)
 	go getCpuFreq(pool.cpuFreq, pool.err)
+	go getCpuTemp(pool.cpuTemp, pool.err)
+	go getMem(pool.mem, pool.err)
 
 	return &pool
 }
@@ -141,11 +126,10 @@ func Start() *pool {
 func handleErr(errch chan error, n int) (err error) {
 	for i := 0; i < n; i++ {
 		err = <-errch
+		if err != nil {
+			return
+		}
 	}
-	if err != nil {
-		return
-	}
-
 	return
 }
 
@@ -158,6 +142,8 @@ func (p *pool) Update(d *Dynamic) error {
 	d.Time = <-p.time
 	d.CpuLoad = <-p.cpuLoad
 	d.CpuFreq = <-p.cpuFreq
+	d.CpuTemp = <-p.cpuTemp
+	d.Mem = <-p.mem
 
 	return nil
 }

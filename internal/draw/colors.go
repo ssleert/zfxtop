@@ -30,3 +30,20 @@ func colorForFreq(c *[6]string, p float64) string {
 		return c[0]
 	}
 }
+
+func colorForTemp(c *[6]string, p int) string {
+	switch {
+	case p > 80:
+		return c[5]
+	case p > 70:
+		return c[4]
+	case p > 60:
+		return c[3]
+	case p > 50:
+		return c[2]
+	case p > 40:
+		return c[1]
+	default:
+		return c[0]
+	}
+}
