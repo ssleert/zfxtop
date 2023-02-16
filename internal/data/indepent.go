@@ -27,3 +27,4 @@ func GetTimeNow(ch chan time.Time, err chan error) {
 		ch <- time.Now()
 	}
 }
+

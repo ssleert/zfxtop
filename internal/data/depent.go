@@ -219,7 +219,7 @@ func getCpuLoad(ch chan int, errch chan error) {
 		totalTicks := float64(total1 - total0)
 
 		load := int(math.Round(
-			100 * ((totalTicks - idleTicks) / totalTicks),
+			sfolib.Perc(totalTicks-idleTicks, totalTicks),
 		))
 		if load < 0 || load > 100 {
 			errch <- errors.New("cpu load is higher than 100%")
@@ -353,15 +353,15 @@ func getMem(memch chan memoryInfo, errch chan error) {
 		memch <- memoryInfo{
 			Used: (total - float64(ram.Available)) / 1048576,
 			UsedPerc: int(math.Round(
-				((total - float64(ram.Available)) / total) * 100,
+				sfolib.Perc(total-float64(ram.Available), total),
 			)),
 			Available: float64(ram.Available) / 1048576,
 			AvailablePerc: int(math.Round(
-				float64(ram.Available) / total * 100,
+				sfolib.Perc(float64(ram.Available), total),
 			)),
 			Free: float64(ram.Free) / 1048576,
 			FreePerc: int(math.Round(
-				float64(ram.Free) / total * 100,
+				sfolib.Perc(float64(ram.Free), total),
 			)),
 		}
 	}

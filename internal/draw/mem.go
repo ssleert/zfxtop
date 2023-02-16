@@ -32,5 +32,19 @@ func (s *Info) memDynamic() {
 	s.reset()
 	s.putStr(28, s.y+12, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Used)))
 
-	return
+	s.putStr(15, s.y+18, "               ")
+	s.tui.WriteString(s.colorMid)
+	s.putStr(18, s.y+18, "%")
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Mem.AvailablePerc))
+	s.putStr(17, s.y+18, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.AvailablePerc)))
+	s.reset()
+	s.putStr(28, s.y+18, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Available)))
+
+	s.putStr(10, s.y+24, "                    ")
+	s.tui.WriteString(s.colorMid)
+	s.putStr(13, s.y+24, "%")
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Mem.FreePerc))
+	s.putStr(12, s.y+24, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.FreePerc)))
+	s.reset()
+	s.putStr(28, s.y+24, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Free)))
 }
