@@ -12,6 +12,7 @@ import (
 	"github.com/ssleert/zfxtop/internal/msg"
 	"github.com/ssleert/zfxtop/internal/self"
 	"os"
+	"runtime"
 	"time"
 )
 
@@ -48,6 +49,8 @@ func init() {
 }
 
 func main() {
+	runtime.GOMAXPROCS(100)
+
 	if version {
 		versionFunc()
 		return

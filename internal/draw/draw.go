@@ -96,6 +96,7 @@ func (s *Info) Stop() {
 
 func (s *Info) Redraw() string {
 	var buf strings.Builder
+	buf.WriteString(sterm.CursorTo(1, s.y+1))
 	buf.WriteString(sterm.ClearScreenDown())
 	buf.WriteString(s.Static())
 	buf.WriteString(s.Dynamic())
