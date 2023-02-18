@@ -1,6 +1,6 @@
 module github.com/ssleert/zfxtop
 
-go 1.19
+go 1.18
 
 require (
 	github.com/ssleert/ginip v0.0.0-20230216143908-88dd7fec65f8

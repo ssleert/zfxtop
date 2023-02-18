@@ -8,6 +8,7 @@ import (
 	"github.com/ssleert/sfolib"
 	"math"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -108,7 +109,7 @@ func getMemTotal(ch chan float64, errch chan error) {
 	}
 
 	errch <- err
-	ch <- float64(sd) / 1048576
+	ch <- float64(sd) / GB
 }
 
 func getDiskSize(ch chan float64, errch chan error) {
@@ -118,7 +119,7 @@ func getDiskSize(ch chan float64, errch chan error) {
 		errch <- err
 		ch <- 0
 	}
-	result := float64(stat.Bsize*int64(stat.Blocks)/1048576) / 1024
+	result := float64(stat.Bsize*int64(stat.Blocks)) / (GB * MB)
 
 	errch <- nil
 	ch <- result
@@ -351,20 +352,82 @@ func getMem(memch chan memoryInfo, errch chan error) {
 
 		errch <- nil
 		memch <- memoryInfo{
-			Used: (total - float64(ram.Available)) / 1048576,
+			Used: (total - float64(ram.Available)) / GB,
 			UsedPerc: int(math.Round(
 				sfolib.Perc(total-float64(ram.Available), total),
 			)),
-			Available: float64(ram.Available) / 1048576,
+			Available: float64(ram.Available) / GB,
 			AvailablePerc: int(math.Round(
 				sfolib.Perc(float64(ram.Available), total),
 			)),
-			Free: float64(ram.Free) / 1048576,
+			Free: float64(ram.Free) / GB,
 			FreePerc: int(math.Round(
 				sfolib.Perc(float64(ram.Free), total),
+			)),
+			SwapTotal: float64(ram.SwapTotal) / GB,
+			SwapUsed:  (float64(ram.SwapTotal) - float64(ram.SwapFree)) / GB,
+			SwapUsedPerc: int(math.Round(
+				sfolib.Perc(float64(ram.SwapTotal)-float64(ram.SwapFree), float64(ram.SwapTotal)),
 			)),
 		}
 	}
 }
+
+func getRootDirInfo(ch chan rootInfo, errch chan error) {
+	var stat syscall.Statfs_t
+
+	for {
+		err := syscall.Statfs("/", &stat)
+		if err != nil {
+			errch <- err
+			ch <- rootInfo{}
+		}
+
+		errch <- nil
+		ch <- rootInfo{
+			Used: float64((stat.Blocks-stat.Bfree)*uint64(stat.Bsize)) / (GB * MB),
+			UsedPerc: int(math.Round(
+				sfolib.Perc(
+					float64((stat.Blocks-stat.Bfree)*uint64(stat.Bsize)),
+					float64(stat.Blocks*uint64(stat.Bsize)),
+				),
+			)),
+		}
+	}
+}
+
+func getHomeDirInfo(ch chan homeInfo, errch chan error) {
+	var stat syscall.Statfs_t
+	err := syscall.Statfs("/home", &stat)
+	if err != nil {
+		errch <- err
+		ch <- homeInfo{}
+	}
+
+	var used int64
+	filepath.Walk("/home",
+		func(_ string, info os.FileInfo, _ error) error {
+			if !info.IsDir() {
+				used += info.Size()
+			}
+			return nil
+		},
+	)
+
+	result := float64(used) / (GB * MB)
+	all := float64(stat.Blocks * uint64(stat.Bsize))
+
+	for {
+		errch <- nil
+		ch <- homeInfo{
+			Used: result,
+			UsedPerc: int(math.Round(
+				sfolib.Perc(result, all),
+			)),
+		}
+	}
+}
+
+// func getUsrDirInfo
 
 // +=========================================================+

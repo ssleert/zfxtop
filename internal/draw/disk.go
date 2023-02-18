@@ -3,6 +3,7 @@ package draw
 import (
 	"fmt"
 	"github.com/ssleert/sterm"
+	"strconv"
 )
 
 // draw static info for bat block
@@ -33,6 +34,14 @@ func (s *Info) diskStatic() {
 
 // draw dynamic info for bat block
 func (s *Info) diskDynamic() {
-	// no implemented
-	return
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Root.UsedPerc))
+	s.putStr(47, s.y+19, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Root.UsedPerc)))
+	s.reset()
+	s.putStr(60, s.y+19, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Root.Used)))
+
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Home.UsedPerc))
+	s.putStr(47, s.y+20, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Home.UsedPerc)))
+	s.reset()
+	s.putStr(60, s.y+20, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Home.Used)))
+
 }

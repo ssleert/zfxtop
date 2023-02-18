@@ -126,6 +126,8 @@ func (s *Info) Dynamic() string {
 	s.tui.Reset()
 	s.cpuDynamic()
 	s.memDynamic()
+	s.swapDynamic()
+	s.diskDynamic()
 
 	return s.tui.String()
 }

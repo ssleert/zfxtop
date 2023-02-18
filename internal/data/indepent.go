@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+// why without bytes?
+const (
+	KB = 1
+	MB = KB * 1024
+	GB = MB * 1024
+)
+
 func getValue(s string, v string) (string, error) {
 	ini, err := ginip.Load(s)
 	if err != nil {
@@ -21,10 +28,9 @@ func getValue(s string, v string) (string, error) {
 	return r, nil
 }
 
-func GetTimeNow(ch chan time.Time, err chan error) {
+func getTimeNow(ch chan time.Time, err chan error) {
 	for {
 		err <- nil
 		ch <- time.Now()
 	}
 }
-
