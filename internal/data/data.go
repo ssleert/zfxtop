@@ -45,8 +45,8 @@ type usrInfo struct {
 
 // battery frame info
 type batInfo struct {
-	BatCharge int
-	BatLife   time.Duration
+	Perc int
+	Life time.Duration
 }
 
 // battery
@@ -120,8 +120,10 @@ func Start() *pool {
 		mem:     make(chan memoryInfo),
 		root:    make(chan rootInfo),
 		home:    make(chan homeInfo),
+		usr:     make(chan usrInfo),
+		bat:     make(chan batInfo),
 		err:     make(chan error),
-		n:       7,
+		n:       9,
 	}
 
 	go getTimeNow(pool.time, pool.err)
@@ -131,6 +133,8 @@ func Start() *pool {
 	go getMem(pool.mem, pool.err)
 	go getRootDirInfo(pool.root, pool.err)
 	go getHomeDirInfo(pool.home, pool.err)
+	go getUsrDirInfo(pool.usr, pool.err)
+	go getBat(pool.bat, pool.err)
 
 	return &pool
 }
@@ -158,6 +162,8 @@ func (p *pool) Update(d *Dynamic) error {
 	d.Mem = <-p.mem
 	d.Root = <-p.root
 	d.Home = <-p.home
+	d.Usr = <-p.usr
+	d.Bat = <-p.bat
 
 	return nil
 }

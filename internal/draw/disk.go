@@ -44,4 +44,8 @@ func (s *Info) diskDynamic() {
 	s.reset()
 	s.putStr(60, s.y+20, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Home.Used)))
 
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Usr.UsedPerc))
+	s.putStr(47, s.y+21, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Usr.UsedPerc)))
+	s.reset()
+	s.putStr(60, s.y+21, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Usr.Used)))
 }

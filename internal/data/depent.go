@@ -397,15 +397,17 @@ func getRootDirInfo(ch chan rootInfo, errch chan error) {
 }
 
 func getHomeDirInfo(ch chan homeInfo, errch chan error) {
+	dir := "/home"
+
 	var stat syscall.Statfs_t
-	err := syscall.Statfs("/home", &stat)
+	err := syscall.Statfs(dir, &stat)
 	if err != nil {
 		errch <- err
 		ch <- homeInfo{}
 	}
 
 	var used int64
-	filepath.Walk("/home",
+	filepath.Walk(dir,
 		func(_ string, info os.FileInfo, _ error) error {
 			if !info.IsDir() {
 				used += info.Size()
@@ -415,7 +417,7 @@ func getHomeDirInfo(ch chan homeInfo, errch chan error) {
 	)
 
 	result := float64(used) / (GB * MB)
-	all := float64(stat.Blocks * uint64(stat.Bsize))
+	all := float64(stat.Blocks * uint64(stat.Bsize) / (GB * MB))
 
 	for {
 		errch <- nil
@@ -428,6 +430,88 @@ func getHomeDirInfo(ch chan homeInfo, errch chan error) {
 	}
 }
 
-// func getUsrDirInfo
+func getUsrDirInfo(ch chan usrInfo, errch chan error) {
+	dir := "/usr"
+
+	var stat syscall.Statfs_t
+	err := syscall.Statfs(dir, &stat)
+	if err != nil {
+		errch <- err
+		ch <- usrInfo{}
+	}
+
+	var used int64
+	filepath.Walk(dir,
+		func(_ string, info os.FileInfo, _ error) error {
+			if !info.IsDir() {
+				used += info.Size()
+			}
+			return nil
+		},
+	)
+
+	result := float64(used) / (GB * MB)
+	all := float64(stat.Blocks * uint64(stat.Bsize) / (GB * MB))
+
+	for {
+		errch <- nil
+		ch <- usrInfo{
+			Used: result,
+			UsedPerc: int(math.Round(
+				sfolib.Perc(result, all),
+			)),
+		}
+	}
+}
+
+func getBat(ch chan batInfo, errch chan error) {
+	file := "/sys/class/power_supply/"
+	dr, err := os.ReadDir(file)
+	if err != nil {
+		errch <- err
+		ch <- batInfo{}
+	}
+
+	bats := make([]string, 0, 5)
+	for _, e := range dr {
+		if strings.HasPrefix(e.Name(), "BAT") {
+			bats = append(bats, file+e.Name()+"/capacity")
+		}
+	}
+
+	if len(bats) < 1 {
+		for {
+			errch <- nil
+			ch <- batInfo{
+				Perc: 101,
+				Life: 100 * time.Minute,
+			}
+		}
+	}
+
+	for {
+		var sum int
+		for _, e := range bats {
+			f, err := sfolib.ReadFirstLine(e)
+			if err != nil {
+				errch <- err
+				ch <- batInfo{}
+			}
+			charge, err := strconv.Atoi(string(f))
+			if err != nil {
+				errch <- err
+				ch <- batInfo{}
+			}
+
+			sum += charge
+		}
+
+		errch <- nil
+		ch <- batInfo{
+			Perc: sum / len(bats),
+			Life: 100 * time.Minute,
+		}
+	}
+}
 
 // +=========================================================+

@@ -128,6 +128,7 @@ func (s *Info) Dynamic() string {
 	s.memDynamic()
 	s.swapDynamic()
 	s.diskDynamic()
+	s.batDynamic()
 
 	return s.tui.String()
 }
