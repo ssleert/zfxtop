@@ -28,19 +28,15 @@ type memoryInfo struct {
 }
 
 // disk frame info
-type rootInfo struct {
-	Used     float64
-	UsedPerc int
-}
+type diskInfo struct {
+	RootUsed     float64
+	RootUsedPerc int
 
-type homeInfo struct {
-	Used     float64
-	UsedPerc int
-}
+	HomeUsed     float64
+	HomeUsedPerc int
 
-type usrInfo struct {
-	Used     float64
-	UsedPerc int
+	UsrUsed     float64
+	UsrUsedPerc int
 }
 
 // battery frame info
@@ -67,9 +63,7 @@ type Dynamic struct {
 	CpuTemp int
 
 	Mem  memoryInfo
-	Root rootInfo
-	Home homeInfo
-	Usr  usrInfo
+	Disk diskInfo
 	Bat  batInfo
 }
 
@@ -86,9 +80,7 @@ type pool struct {
 	cpuTemp chan int
 
 	mem  chan memoryInfo
-	root chan rootInfo
-	home chan homeInfo
-	usr  chan usrInfo
+	disk chan diskInfo
 	bat  chan batInfo
 
 	err chan error
@@ -118,12 +110,10 @@ func Start() *pool {
 		cpuFreq: make(chan float64),
 		cpuTemp: make(chan int),
 		mem:     make(chan memoryInfo),
-		root:    make(chan rootInfo),
-		home:    make(chan homeInfo),
-		usr:     make(chan usrInfo),
+		disk:    make(chan diskInfo),
 		bat:     make(chan batInfo),
 		err:     make(chan error),
-		n:       9,
+		n:       7,
 	}
 
 	go getTimeNow(pool.time, pool.err)
@@ -131,9 +121,7 @@ func Start() *pool {
 	go getCpuFreq(pool.cpuFreq, pool.err)
 	go getCpuTemp(pool.cpuTemp, pool.err)
 	go getMem(pool.mem, pool.err)
-	go getRootDirInfo(pool.root, pool.err)
-	go getHomeDirInfo(pool.home, pool.err)
-	go getUsrDirInfo(pool.usr, pool.err)
+	go getDiskInfo(pool.disk, pool.err)
 	go getBat(pool.bat, pool.err)
 
 	return &pool
@@ -160,9 +148,7 @@ func (p *pool) Update(d *Dynamic) error {
 	d.CpuFreq = <-p.cpuFreq
 	d.CpuTemp = <-p.cpuTemp
 	d.Mem = <-p.mem
-	d.Root = <-p.root
-	d.Home = <-p.home
-	d.Usr = <-p.usr
+	d.Disk = <-p.disk
 	d.Bat = <-p.bat
 
 	return nil

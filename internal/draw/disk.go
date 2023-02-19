@@ -34,18 +34,18 @@ func (s *Info) diskStatic() {
 
 // draw dynamic info for bat block
 func (s *Info) diskDynamic() {
-	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Root.UsedPerc))
-	s.putStr(47, s.y+19, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Root.UsedPerc)))
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Disk.RootUsedPerc))
+	s.putStr(47, s.y+19, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Disk.RootUsedPerc)))
 	s.reset()
-	s.putStr(60, s.y+19, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Root.Used)))
+	s.putStr(60, s.y+19, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Disk.RootUsed)))
 
-	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Home.UsedPerc))
-	s.putStr(47, s.y+20, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Home.UsedPerc)))
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Disk.HomeUsedPerc))
+	s.putStr(47, s.y+20, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Disk.HomeUsedPerc)))
 	s.reset()
-	s.putStr(60, s.y+20, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Home.Used)))
+	s.putStr(60, s.y+20, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Disk.HomeUsed)))
 
-	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Usr.UsedPerc))
-	s.putStr(47, s.y+21, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Usr.UsedPerc)))
+	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Disk.UsrUsedPerc))
+	s.putStr(47, s.y+21, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Disk.UsrUsedPerc)))
 	s.reset()
-	s.putStr(60, s.y+21, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Usr.Used)))
+	s.putStr(60, s.y+21, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Disk.UsrUsed)))
 }

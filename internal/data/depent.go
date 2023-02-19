@@ -384,95 +384,130 @@ func getMem(memch chan memoryInfo, errch chan error) {
 	}
 }
 
-func getRootDirInfo(ch chan rootInfo, errch chan error) {
-	var stat syscall.Statfs_t
+type dirInfo struct {
+	Used     float64
+	UsedPerc int
+}
 
-	for {
-		err := syscall.Statfs("/", &stat)
+func getDiskInfo(ch chan diskInfo, errch chan error) {
+	rootDir := make(chan dirInfo)
+	homeDir := make(chan dirInfo)
+	usrDir := make(chan dirInfo)
+	errs := make(chan error)
+
+	go func(ch chan dirInfo, errch chan error) {
+		var stat syscall.Statfs_t
+
+		for {
+			err := syscall.Statfs("/", &stat)
+			if err != nil {
+				errch <- err
+				ch <- dirInfo{}
+			}
+
+			errch <- nil
+			ch <- dirInfo{
+				Used: float64((stat.Blocks-stat.Bfree)*uint64(stat.Bsize)) / (GB * MB),
+				UsedPerc: int(math.Round(
+					sfolib.Perc(
+						float64((stat.Blocks-stat.Bfree)*uint64(stat.Bsize)),
+						float64(stat.Blocks*uint64(stat.Bsize)),
+					),
+				)),
+			}
+		}
+	}(rootDir, errs)
+
+	go func(ch chan dirInfo, errch chan error) {
+		dir := "/home"
+
+		var stat syscall.Statfs_t
+		err := syscall.Statfs(dir, &stat)
 		if err != nil {
 			errch <- err
-			ch <- rootInfo{}
+			ch <- dirInfo{}
 		}
 
-		errch <- nil
-		ch <- rootInfo{
-			Used: float64((stat.Blocks-stat.Bfree)*uint64(stat.Bsize)) / (GB * MB),
-			UsedPerc: int(math.Round(
-				sfolib.Perc(
-					float64((stat.Blocks-stat.Bfree)*uint64(stat.Bsize)),
-					float64(stat.Blocks*uint64(stat.Bsize)),
-				),
-			)),
-		}
-	}
-}
+		var used int64
+		filepath.Walk(dir,
+			func(_ string, info os.FileInfo, _ error) error {
+				if !info.IsDir() {
+					used += info.Size()
+				}
+				return nil
+			},
+		)
 
-func getHomeDirInfo(ch chan homeInfo, errch chan error) {
-	dir := "/home"
+		result := float64(used) / (GB * MB)
+		all := float64(stat.Blocks * uint64(stat.Bsize) / (GB * MB))
 
-	var stat syscall.Statfs_t
-	err := syscall.Statfs(dir, &stat)
-	if err != nil {
-		errch <- err
-		ch <- homeInfo{}
-	}
-
-	var used int64
-	filepath.Walk(dir,
-		func(_ string, info os.FileInfo, _ error) error {
-			if !info.IsDir() {
-				used += info.Size()
+		for {
+			errch <- nil
+			ch <- dirInfo{
+				Used: result,
+				UsedPerc: int(math.Round(
+					sfolib.Perc(result, all),
+				)),
 			}
-			return nil
-		},
-	)
+		}
+	}(homeDir, errs)
 
-	result := float64(used) / (GB * MB)
-	all := float64(stat.Blocks * uint64(stat.Bsize) / (GB * MB))
+	go func(ch chan dirInfo, errch chan error) {
+		dir := "/usr"
+
+		var stat syscall.Statfs_t
+		err := syscall.Statfs(dir, &stat)
+		if err != nil {
+			errch <- err
+			ch <- dirInfo{}
+		}
+
+		var used int64
+		filepath.Walk(dir,
+			func(_ string, info os.FileInfo, _ error) error {
+				if !info.IsDir() {
+					used += info.Size()
+				}
+				return nil
+			},
+		)
+
+		result := float64(used) / (GB * MB)
+		all := float64(stat.Blocks * uint64(stat.Bsize) / (GB * MB))
+
+		for {
+			errch <- nil
+			ch <- dirInfo{
+				Used: result,
+				UsedPerc: int(math.Round(
+					sfolib.Perc(result, all),
+				)),
+			}
+		}
+	}(usrDir, errs)
 
 	for {
+		err := handleErr(errs, 3)
+		if err != nil {
+			errch <- err
+			ch <- diskInfo{}
+		}
+
+		rtd := <-rootDir
+		hmu := <-homeDir
+		usd := <-usrDir
+
 		errch <- nil
-		ch <- homeInfo{
-			Used: result,
-			UsedPerc: int(math.Round(
-				sfolib.Perc(result, all),
-			)),
+		ch <- diskInfo{
+			RootUsed:     rtd.Used,
+			RootUsedPerc: rtd.UsedPerc,
+			HomeUsed:     hmu.Used,
+			HomeUsedPerc: hmu.UsedPerc,
+			UsrUsed:      usd.Used,
+			UsrUsedPerc:  usd.UsedPerc,
 		}
 	}
-}
 
-func getUsrDirInfo(ch chan usrInfo, errch chan error) {
-	dir := "/usr"
-
-	var stat syscall.Statfs_t
-	err := syscall.Statfs(dir, &stat)
-	if err != nil {
-		errch <- err
-		ch <- usrInfo{}
-	}
-
-	var used int64
-	filepath.Walk(dir,
-		func(_ string, info os.FileInfo, _ error) error {
-			if !info.IsDir() {
-				used += info.Size()
-			}
-			return nil
-		},
-	)
-
-	result := float64(used) / (GB * MB)
-	all := float64(stat.Blocks * uint64(stat.Bsize) / (GB * MB))
-
-	for {
-		errch <- nil
-		ch <- usrInfo{
-			Used: result,
-			UsedPerc: int(math.Round(
-				sfolib.Perc(result, all),
-			)),
-		}
-	}
 }
 
 func getBat(ch chan batInfo, errch chan error) {
