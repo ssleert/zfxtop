@@ -350,6 +350,19 @@ func getMem(memch chan memoryInfo, errch chan error) {
 			memch <- memoryInfo{}
 		}
 
+		var (
+			SwapTotal    float64
+			SwapUsed     float64
+			SwapUsedPerc int
+		)
+		if ram.SwapTotal != 0 {
+			SwapTotal = float64(ram.SwapTotal) / GB
+			SwapUsed = (float64(ram.SwapTotal) - float64(ram.SwapFree)) / GB
+			SwapUsedPerc = int(math.Round(
+				sfolib.Perc(float64(ram.SwapTotal)-float64(ram.SwapFree), float64(ram.SwapTotal)),
+			))
+		}
+
 		errch <- nil
 		memch <- memoryInfo{
 			Used: (total - float64(ram.Available)) / GB,
@@ -364,11 +377,9 @@ func getMem(memch chan memoryInfo, errch chan error) {
 			FreePerc: int(math.Round(
 				sfolib.Perc(float64(ram.Free), total),
 			)),
-			SwapTotal: float64(ram.SwapTotal) / GB,
-			SwapUsed:  (float64(ram.SwapTotal) - float64(ram.SwapFree)) / GB,
-			SwapUsedPerc: int(math.Round(
-				sfolib.Perc(float64(ram.SwapTotal)-float64(ram.SwapFree), float64(ram.SwapTotal)),
-			)),
+			SwapTotal:    SwapTotal,
+			SwapUsed:     SwapUsed,
+			SwapUsedPerc: SwapUsedPerc,
 		}
 	}
 }
