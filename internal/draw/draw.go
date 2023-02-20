@@ -6,6 +6,7 @@ import (
 	"github.com/ssleert/zfxtop/internal/conf"
 	"github.com/ssleert/zfxtop/internal/data"
 	"strings"
+	"sync"
 )
 
 type iconed [3]string
@@ -26,6 +27,8 @@ type Info struct {
 	colorLoad  [6]string
 	colorTempr [6]string
 	colorList  [3]string
+
+	mu sync.Mutex
 }
 
 const (
@@ -98,8 +101,10 @@ func (s *Info) Redraw() string {
 	var buf strings.Builder
 	buf.WriteString(sterm.CursorTo(1, s.y+1))
 	buf.WriteString(sterm.ClearScreenDown())
+	s.mu.Lock()
 	buf.WriteString(s.Static())
 	buf.WriteString(s.Dynamic())
+	s.mu.Unlock()
 	return buf.String()
 }
 

@@ -10,8 +10,6 @@ import (
 func (s *Info) batPercLine(x, y, l, p int) {
 	s.tui.WriteString(sterm.CursorTo(x, y))
 
-	s.tui.WriteString(s.colorFaint)
-
 	lngt := float64(l)
 	perc := float64(p)
 	for n := 0.0; n < lngt; n++ {
@@ -52,6 +50,6 @@ func (s *Info) batDynamic() {
 	case s.DataDyn.Bat.Perc > 9:
 		s.batPercLine(38, s.y+24, 23, s.DataDyn.Bat.Perc)
 	default:
-		s.batPercLine(38, s.y+24, 21, s.DataDyn.Bat.Perc)
+		s.batPercLine(38, s.y+24, 24, s.DataDyn.Bat.Perc)
 	}
 }

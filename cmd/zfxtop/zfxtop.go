@@ -81,11 +81,6 @@ func main() {
 		msg.ExitMsg(err)
 	}
 
-	defer func() {
-		s.Stop()
-		os.Exit(0)
-	}()
-
 	d := data.Start()
 
 	datadyn := &s.DataDyn
@@ -95,21 +90,6 @@ func main() {
 		s.Stop()
 		fmt.Println(err)
 		os.Exit(1)
-	}
-
-	updateAll := func() {
-		err := data.Update(datastat)
-		if err != nil {
-			exitFromDraw(err)
-		}
-		err = d.Update(datadyn)
-		if err != nil {
-			exitFromDraw(err)
-		}
-		buf := s.Static()
-		fmt.Print(buf)
-		buf = s.Dynamic()
-		fmt.Print(buf)
 	}
 
 	updateDyn := func() {
@@ -141,7 +121,12 @@ func main() {
 	}()
 
 	// draw first data
-	updateAll()
+	err = data.Update(datastat)
+	if err != nil {
+		exitFromDraw(err)
+	}
+	fmt.Print(s.Static())
+	fmt.Print(s.Redraw())
 
 	ticker := time.NewTicker(conf.Update)
 
