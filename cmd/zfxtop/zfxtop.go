@@ -73,7 +73,7 @@ func main() {
 		conf.Borders,
 		sterm.Color256Fg(conf.ColorMid),
 		sterm.Color256Fg(conf.ColorFaint),
-		conv.SColorsBg(conf.ColorLoad),
+		conv.SColorsFg(conf.ColorLoad),
 		conv.SColorsFg(conf.ColorTempr),
 		conv.TColorsFg(conf.ColorList),
 	)

@@ -274,7 +274,6 @@ func getCpuTemp(ch chan int, errch chan error) {
 	var (
 		isCoreTemp  bool
 		coreTempDir string
-		// coreTemp    int
 	)
 
 	hwms, err := os.ReadDir("/sys/class/hwmon")

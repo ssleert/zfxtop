@@ -46,4 +46,8 @@ func (s *Info) memDynamic() {
 	s.putStr(12, s.y+24, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.FreePerc)))
 	s.reset()
 	s.putStr(28, s.y+24, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Free)))
+
+	s.drawGraph(6, s.y+16, 4, 27, s.DataDyn.Graph.MemUsed[:])
+	s.drawGraph(6, s.y+22, 4, 27, s.DataDyn.Graph.MemAvailable[:])
+	s.drawGraph(6, s.y+28, 4, 27, s.DataDyn.Graph.MemFree[:])
 }

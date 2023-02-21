@@ -26,8 +26,9 @@ func (s *Info) cpuDynamic() {
 	s.tui.WriteString(s.DataDyn.Time.Format("15:04:05"))
 	s.tui.WriteRune(' ')
 
+	s.drawGraph(6, s.y+9, 7, 59, s.DataDyn.Graph.CpuLoad[:])
 	s.tui.WriteString(s.colorFaint)
-	buf, _ := sterm.CharArea(' ', 6, s.y+3, 64, s.y+9)
+	buf, _ := sterm.CharArea(' ', 6, s.y+3, 20, s.y+7)
 	s.tui.WriteString(buf)
 	buf, _ = sterm.FrameArea(s.borders, 6, s.y+3, 20, s.y+7)
 	s.tui.WriteString(buf)
@@ -70,4 +71,5 @@ func (s *Info) cpuDynamic() {
 	s.tui.WriteString(sterm.CursorLeft(3))
 	s.tui.WriteString(colorForTemp(&s.colorTempr, s.DataDyn.CpuTemp))
 	s.tui.WriteString(sterm.RevPrint(strconv.Itoa(s.DataDyn.CpuTemp)))
+
 }

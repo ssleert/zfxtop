@@ -6,25 +6,20 @@ import (
 
 // mem frame info
 type memoryInfo struct {
-	Used      float64
-	UsedPerc  int
-	UsedGraph []int
+	Used     float64
+	UsedPerc int
 
-	Available      float64
-	AvailablePerc  int
-	AvailableGraph []int
+	Available     float64
+	AvailablePerc int
 
-	Free      float64
-	FreePerc  int
-	FreeGraph []int
+	Free     float64
+	FreePerc int
 
 	// swap frame info
-	SwapTotal      float64
-	SwapTotalGraph []int
+	SwapTotal float64
 
-	SwapUsed      float64
-	SwapUsedPerc  int
-	SwapUsedGraph []int
+	SwapUsed     float64
+	SwapUsedPerc int
 }
 
 // disk frame info
@@ -45,6 +40,17 @@ type batInfo struct {
 	Life time.Duration
 }
 
+// graph arrays
+type graph struct {
+	CpuLoad [59]int
+
+	MemUsed      [27]int
+	MemAvailable [27]int
+	MemFree      [27]int
+
+	SwapUsed [27]int
+}
+
 // battery
 // data struct for dynamic data updates
 type Dynamic struct {
@@ -56,11 +62,12 @@ type Dynamic struct {
 	// why not make another type for cpu info?
 	// coz, frequency and temperature find very different values.
 	// and don't depend on each other
-	CpuLoad      int
-	CpuLoadGraph []int
+	CpuLoad int
 
 	CpuFreq float64
 	CpuTemp int
+
+	Graph graph
 
 	Mem  memoryInfo
 	Disk diskInfo
@@ -73,8 +80,7 @@ type pool struct {
 	time chan time.Time
 
 	// cpu frame info
-	cpuLoad      chan int
-	cpuLoadGraph chan []int
+	cpuLoad chan int
 
 	cpuFreq chan float64
 	cpuTemp chan int
@@ -150,6 +156,13 @@ func (p *pool) Update(d *Dynamic) error {
 	d.Mem = <-p.mem
 	d.Disk = <-p.disk
 	d.Bat = <-p.bat
+
+	addToGraph(d.Graph.CpuLoad[:], d.CpuLoad)
+	addToGraph(d.Graph.MemUsed[:], d.Mem.UsedPerc)
+	addToGraph(d.Graph.MemUsed[:], d.Mem.UsedPerc)
+	addToGraph(d.Graph.MemAvailable[:], d.Mem.AvailablePerc)
+	addToGraph(d.Graph.MemFree[:], d.Mem.FreePerc)
+	addToGraph(d.Graph.SwapUsed[:], d.Mem.SwapUsedPerc)
 
 	return nil
 }
