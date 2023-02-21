@@ -49,8 +49,6 @@ func init() {
 }
 
 func main() {
-	runtime.GOMAXPROCS(100)
-
 	if version {
 		versionFunc()
 		return
