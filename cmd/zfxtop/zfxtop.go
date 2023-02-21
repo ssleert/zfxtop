@@ -12,7 +12,6 @@ import (
 	"github.com/ssleert/zfxtop/internal/msg"
 	"github.com/ssleert/zfxtop/internal/self"
 	"os"
-	"runtime"
 	"time"
 )
 
