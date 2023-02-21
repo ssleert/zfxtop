@@ -32,7 +32,7 @@ type Info struct {
 }
 
 const (
-	Size = 31
+	Size = 29
 )
 
 func (s *Info) putStr(x, y int, str string) {
