@@ -159,7 +159,6 @@ func (p *pool) Update(d *Dynamic) error {
 
 	addToGraph(d.Graph.CpuLoad[:], d.CpuLoad)
 	addToGraph(d.Graph.MemUsed[:], d.Mem.UsedPerc)
-	addToGraph(d.Graph.MemUsed[:], d.Mem.UsedPerc)
 	addToGraph(d.Graph.MemAvailable[:], d.Mem.AvailablePerc)
 	addToGraph(d.Graph.MemFree[:], d.Mem.FreePerc)
 	addToGraph(d.Graph.SwapUsed[:], d.Mem.SwapUsedPerc)
