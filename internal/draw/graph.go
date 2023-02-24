@@ -77,6 +77,9 @@ func (s *Info) drawGraph(x, y, h, l int, in []int) {
 
 		ost := math.Mod(float64(e), pds*8)
 		col := int(math.Floor(float64(e) / (pds * 8)))
+		if e == 100 {
+			col--
+		}
 
 		var i int
 		for ; i < col; i++ {

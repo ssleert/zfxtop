@@ -43,8 +43,8 @@ func (s *Info) cpuDynamic() {
 	if s.icons {
 		s.tui.WriteString(freq[0])
 		s.tui.WriteString(freq[1])
-		s.reset()
 	}
+	s.reset()
 	s.tui.WriteString(freq[2])
 
 	// -------------------------------------------

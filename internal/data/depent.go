@@ -506,7 +506,6 @@ func getDiskInfo(ch chan diskInfo, errch chan error) {
 			UsrUsedPerc:  usd.UsedPerc,
 		}
 	}
-
 }
 
 func getBat(ch chan batInfo, errch chan error) {
