@@ -71,5 +71,4 @@ func (s *Info) cpuDynamic() {
 	s.tui.WriteString(sterm.CursorLeft(3))
 	s.tui.WriteString(colorForTemp(&s.colorTempr, s.DataDyn.CpuTemp))
 	s.tui.WriteString(sterm.RevPrint(strconv.Itoa(s.DataDyn.CpuTemp)))
-
 }
