@@ -119,7 +119,7 @@ func getDiskSize(ch chan float64, errch chan error) {
 		errch <- err
 		ch <- 0
 	}
-	result := float64(stat.Bsize*int64(stat.Blocks)) / (GB * MB)
+	result := float64(int(stat.Bsize)*int(stat.Blocks)) / (GB * MB)
 
 	errch <- nil
 	ch <- result
