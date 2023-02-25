@@ -87,6 +87,8 @@ func parseTui(ini *ginip.Ini) error {
 		Borders = sterm.AsciiBorders
 	case "dot":
 		Borders = sterm.DotBorders
+	default:
+		return &BorderIsIncorrect{conf.(string)}
 	}
 
 	conf, err = ini.GetValueBool(sect, colorsVar)

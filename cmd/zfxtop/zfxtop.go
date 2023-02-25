@@ -78,6 +78,11 @@ func main() {
 		msg.ExitMsg(err)
 	}
 
+	defer func() {
+		s.Stop()
+		os.Exit(0)
+	}()
+
 	d := data.Start()
 
 	datadyn := &s.DataDyn
