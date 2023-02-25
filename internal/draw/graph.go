@@ -73,11 +73,13 @@ func (s *Info) drawGraph(x, y, h, l int, in []int) {
 			continue
 		} else if e == 0 {
 			e = 1
+		} else if e > 100 {
+			e = 100
 		}
 
 		ost := math.Mod(float64(e), pds*8)
 		col := int(math.Floor(float64(e) / (pds * 8)))
-		if e == 100 {
+		if e >= 100 {
 			col--
 		}
 

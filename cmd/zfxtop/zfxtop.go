@@ -9,6 +9,7 @@ import (
 	"github.com/ssleert/zfxtop/internal/conv"
 	"github.com/ssleert/zfxtop/internal/data"
 	"github.com/ssleert/zfxtop/internal/draw"
+	"github.com/ssleert/zfxtop/internal/input"
 	"github.com/ssleert/zfxtop/internal/msg"
 	"github.com/ssleert/zfxtop/internal/self"
 	"os"
@@ -52,7 +53,6 @@ func main() {
 		versionFunc()
 		return
 	}
-
 	if test {
 		fmt.Println("asd")
 		return
@@ -78,15 +78,11 @@ func main() {
 		msg.ExitMsg(err)
 	}
 
+	// stop drawing and restore term state
 	defer func() {
 		s.Stop()
 		os.Exit(0)
 	}()
-
-	d := data.Start()
-
-	datadyn := &s.DataDyn
-	datastat := &s.DataStat
 
 	exitFromDraw := func(err error) {
 		s.Stop()
@@ -94,22 +90,36 @@ func main() {
 		os.Exit(1)
 	}
 
-	updateDyn := func() {
-		err := d.Update(datadyn)
-		if err != nil {
-			exitFromDraw(err)
-		}
-		buf := s.Dynamic()
-		fmt.Print(buf)
-	}
+	// start data collection
+	d := data.Start()
+	datadyn := &s.DataDyn
+	datastat := &s.DataStat
 
-	// handle user input
-	go func() {
-		for {
-			ch, err := sterm.GetChar()
+	// first screen update
+	err = data.Update(datastat)
+	if err != nil {
+		exitFromDraw(err)
+	}
+	fmt.Print(s.Static())
+	fmt.Print(s.Redraw())
+
+	// usr input
+	inputch := make(chan rune)
+	go input.Handle(inputch)
+
+	// main loop
+	var ch rune
+	ticker := time.NewTicker(conf.Update)
+	for {
+		select {
+		case <-ticker.C:
+			err := d.Update(datadyn)
 			if err != nil {
-				panic(err)
+				exitFromDraw(err)
 			}
+			buf := s.Dynamic()
+			fmt.Print(buf)
+		case ch = <-inputch:
 			switch ch {
 			case 'q', 'Q', 'й', 'Й':
 				s.Stop()
@@ -120,20 +130,5 @@ func main() {
 				continue
 			}
 		}
-	}()
-
-	// draw first data
-	err = data.Update(datastat)
-	if err != nil {
-		exitFromDraw(err)
-	}
-	fmt.Print(s.Static())
-	fmt.Print(s.Redraw())
-
-	ticker := time.NewTicker(conf.Update)
-
-	// main loop
-	for range ticker.C {
-		updateDyn()
 	}
 }
