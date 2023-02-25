@@ -392,7 +392,9 @@ func getDiskInfo(ch chan diskInfo, errch chan error) {
 	rootDir := make(chan dirInfo)
 	homeDir := make(chan dirInfo)
 	usrDir := make(chan dirInfo)
-	errs := make(chan error)
+	errRoot := make(chan error)
+	errHome := make(chan error)
+	errUsr := make(chan error)
 
 	go func(ch chan dirInfo, errch chan error) {
 		var stat syscall.Statfs_t
@@ -415,7 +417,7 @@ func getDiskInfo(ch chan diskInfo, errch chan error) {
 				)),
 			}
 		}
-	}(rootDir, errs)
+	}(rootDir, errRoot)
 
 	go func(ch chan dirInfo, errch chan error) {
 		dir := "/home"
@@ -449,7 +451,7 @@ func getDiskInfo(ch chan diskInfo, errch chan error) {
 				)),
 			}
 		}
-	}(homeDir, errs)
+	}(homeDir, errHome)
 
 	go func(ch chan dirInfo, errch chan error) {
 		dir := "/usr"
@@ -483,27 +485,70 @@ func getDiskInfo(ch chan diskInfo, errch chan error) {
 				)),
 			}
 		}
-	}(usrDir, errs)
+	}(usrDir, errUsr)
 
+	ticker := time.NewTicker(100 * time.Millisecond)
+	var (
+		rootDirTmp dirInfo
+		homeDirTmp dirInfo
+		usrDirTmp  dirInfo
+		err        error
+	)
 	for {
-		err := handleErr(errs, 3)
-		if err != nil {
-			errch <- err
-			ch <- diskInfo{}
-		}
-
-		rtd := <-rootDir
-		hmu := <-homeDir
-		usd := <-usrDir
-
-		errch <- nil
-		ch <- diskInfo{
-			RootUsed:     rtd.Used,
-			RootUsedPerc: rtd.UsedPerc,
-			HomeUsed:     hmu.Used,
-			HomeUsedPerc: hmu.UsedPerc,
-			UsrUsed:      usd.Used,
-			UsrUsedPerc:  usd.UsedPerc,
+		select {
+		case <-ticker.C:
+			errch <- nil
+			ch <- diskInfo{
+				RootUsed:     rootDirTmp.Used,
+				RootUsedPerc: rootDirTmp.UsedPerc,
+				HomeUsed:     homeDirTmp.Used,
+				HomeUsedPerc: homeDirTmp.UsedPerc,
+				UsrUsed:      usrDirTmp.Used,
+				UsrUsedPerc:  usrDirTmp.UsedPerc,
+			}
+			continue
+		case err = <-errRoot:
+			if err != nil {
+				errch <- err
+				ch <- diskInfo{
+					RootUsed:     0,
+					RootUsedPerc: 0,
+					HomeUsed:     homeDirTmp.Used,
+					HomeUsedPerc: homeDirTmp.UsedPerc,
+					UsrUsed:      usrDirTmp.Used,
+					UsrUsedPerc:  usrDirTmp.UsedPerc,
+				}
+				continue
+			}
+			rootDirTmp = <-rootDir
+		case err = <-errHome:
+			if err != nil {
+				errch <- err
+				ch <- diskInfo{
+					RootUsed:     rootDirTmp.Used,
+					RootUsedPerc: rootDirTmp.UsedPerc,
+					HomeUsed:     0,
+					HomeUsedPerc: 0,
+					UsrUsed:      usrDirTmp.Used,
+					UsrUsedPerc:  usrDirTmp.UsedPerc,
+				}
+				continue
+			}
+			homeDirTmp = <-homeDir
+		case err = <-errUsr:
+			if err != nil {
+				errch <- err
+				ch <- diskInfo{
+					RootUsed:     rootDirTmp.Used,
+					RootUsedPerc: rootDirTmp.UsedPerc,
+					HomeUsed:     homeDirTmp.Used,
+					HomeUsedPerc: homeDirTmp.UsedPerc,
+					UsrUsed:      0,
+					UsrUsedPerc:  0,
+				}
+				continue
+			}
+			usrDirTmp = <-usrDir
 		}
 	}
 }
