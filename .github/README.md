@@ -16,6 +16,7 @@ At this point `zfxtop` is in a very early stage of development so feel free to o
 
 The code is written in `Go` because it is blue :cup_with_straw:.
 
+<br>
 
 # Installation ☁️
 ```
