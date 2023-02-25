@@ -7,7 +7,7 @@
 <br>
 </div>
 
-<img src="https://github.com/ssleert/zfxtop/blob/master/assets/images/ui.png" width="42%" align="right">
+<img src="https://github.com/ssleert/zfxtop/blob/master/assets/images/ui.png" width="50%" align="right">
 
 # Description 📖
 Historically I don't use bars like `polybar`/`waybar` and so I have nowhere to put information about **time**, **CPU** load, **RAM** usage, **disk** usage, and other cool stuff so I decided to write a little ***tui*** utility for this purpose. Also I tried to make it as nice and nice to use as i can.
