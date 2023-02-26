@@ -11,11 +11,9 @@ func Handle(input chan rune, stop chan bool) {
 			panic(err)
 		}
 
-		select {
-		case input <- ch:
-			if <-stop {
-				return
-			}
+		input <- ch
+		if <-stop {
+			return
 		}
 	}
 }
