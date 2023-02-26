@@ -1,5 +1,5 @@
 #!/bin/sh
-. "scripts/lib.sh"
+. 'scripts/lib.sh'
 
 CGO_ENABLED=0
 NAME='zfxtop'
@@ -15,8 +15,6 @@ ARCHES='
 OSES='
   linux
 '
-
-# sorry but now without arm support(
 
 clear() {
   [ -d "$RELEASE" ] && {
@@ -34,14 +32,14 @@ compile() {
 
   for arch in $ARCHES; do
     for os in $OSES; do
-      GOARCH="$arch" GOOS="$os" go build -ldflags="-s -w" -gcflags=all="-B -C" -o "${BDIR}/${NAME}_${VERSION}_${os}_${arch}" "cmd/${NAME}/${NAME}.go"
+      GOARCH="$arch" GOOS="$os" go build -ldflags='-s -w' -gcflags=all='-B -C' -o "${BDIR}/${NAME}_${VERSION}_${os}_${arch}" "cmd/${NAME}/${NAME}.go"
       [ $? -ne 0 ] && {
-        die "exeption during compilation"
+        die 'exeption during compilation'
       }
       msg "'${BDIR}/${NAME}_${VERSION}_${os}_${arch}' builded"
     done
   done
-  compl "all executables builded"
+  compl 'all executables builded'
 }
 
 package() {
@@ -50,14 +48,14 @@ package() {
 
   for arch in $ARCHES; do
     for os in $OSES; do
-      tar -czf "${PDIR}/${NAME}_${VERSION}_${os}_${arch}.tar.gz" "${BDIR}/${NAME}_${VERSION}_${os}_${arch}"
+      tar -C "${BDIR}/" -czf "${PDIR}/${NAME}_${VERSION}_${os}_${arch}.tar.gz" "${NAME}_${VERSION}_${os}_${arch}"
       [ $? -ne 0 ] && {
-        die "exeption during packaging"
+        die 'exeption during packaging'
       }
       msg "'${PDIR}/${NAME}_${VERSION}_${os}_${arch}.tar.gz' packaged"
     done
   done
-  compl "all executables packaged"
+  compl 'all executables packaged'
 }
 
 gen_checksum() {
@@ -76,7 +74,7 @@ main() {
   compile
   package
   gen_checksum
-  compl "ALL COMPLETED"
+  compl 'ALL COMPLETED'
 }
 
 main
