@@ -86,7 +86,7 @@ git clone https://github.com/ssleert/zfxtop.git
 cd zfxtop/
 ./scripts/build.sh
 ```
-If you have a `CPU` with `adm64` architecture you can try to **build** with **optimizations**
+If you have a `CPU` with `amd64` architecture you can try to **build** with **optimizations**
 ```fish
 # v2, v3, v4 supported
 GOAMD64=v3 ./scripts/build.sh

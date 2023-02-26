@@ -55,15 +55,15 @@ main() {
   NAME="zfxtop"
 
   OS="$(uname -s)"
-  msg 'OS type getted.'
+  msg 'OS fetched.'
 
   ARCH="$(uname -m)"
-  msg 'OS arch getted.'
+  msg 'ARCH fetched.'
 
   TMPDIR="$(mktemp -d)"
   msg 'Temp dir created.'
 
-  compl 'All needed info getted.'
+  compl 'All required info fetched.'
 
   RELEASES_URL="https://github.com/ssleert/${NAME}/releases"
   msg 'Fetching latest version'
@@ -95,7 +95,7 @@ main() {
       die "$ARCH is unsupported"
     ;;
   esac
-  msg '$ARCH configured.'
+  msg 'ARCH configured.'
 
   case "$OS" in
     "Linux")
@@ -105,7 +105,7 @@ main() {
       die "$OS is unsupported"
     ;;
   esac
-  msg '$OS configured.'
+  msg 'OS configured.'
 
   export TAR_NAME="${NAME}_${VERSION}_${OS}_${ARCH}.tar.gz"
   export TAR_FILE="${TMPDIR}/${TAR_NAME}"
