@@ -29,7 +29,8 @@ type Info struct {
 }
 
 const (
-	Size = 29
+	SizeY = 30
+	SizeX = 68
 )
 
 func (s *Info) putStr(x, y int, str string) {
@@ -63,13 +64,23 @@ func Start(
 	cl, ct [6]string,
 	cli [3]string,
 ) (*Info, error) {
-	fmt.Print(sterm.ReserveArea(Size))
+	tsx, tsy, err := sterm.Size()
+	if err != nil {
+		return nil, err
+	}
+	if tsx < SizeX || tsy < SizeY {
+		return nil, &TermSizeTooLittle{tsx, tsy}
+	}
+	fmt.Print(sterm.ReserveArea(SizeY))
 	fmt.Print(sterm.CursorHide())
 	x, y, err := sterm.CursorPos()
 	if err != nil {
 		return nil, err
 	}
 	s, err := sterm.GetState()
+	if err != nil {
+		return nil, err
+	}
 	info := Info{
 		x:          x - 1,
 		y:          y - 1,

@@ -6,6 +6,6 @@ import _ "embed"
 //go:embed commit.dat
 var Commit string
 
-//go:generate sh -c "cat ../../VERSION > version.dat"
+//go:generate sh -c "cat ../../VERSION | tr -d '\n' > version.dat"
 //go:embed version.dat
 var Version string

@@ -5,56 +5,48 @@ import (
 	"flag"
 	"fmt"
 	"github.com/ssleert/sterm"
+	"github.com/ssleert/zfxtop/internal/arts"
 	"github.com/ssleert/zfxtop/internal/conf"
 	"github.com/ssleert/zfxtop/internal/conv"
 	"github.com/ssleert/zfxtop/internal/data"
 	"github.com/ssleert/zfxtop/internal/draw"
 	"github.com/ssleert/zfxtop/internal/input"
 	"github.com/ssleert/zfxtop/internal/msg"
-	"github.com/ssleert/zfxtop/internal/self"
 	"os"
 	"time"
 )
 
 var (
-	config  string
-	version bool
-	test    bool
-
-	versionFunc = func() {
-		logoColors := [...]string{
-			sterm.Color256Fg(conf.ColorLoad[5]),
-			sterm.Color256Fg(conf.ColorLoad[4]),
-			sterm.Color256Fg(conf.ColorLoad[3]),
-			sterm.Color256Fg(conf.ColorLoad[2]),
-			sterm.Color256Fg(conf.ColorLoad[1]),
-			sterm.Color256Fg(conf.ColorLoad[0]),
-			sterm.Color256Fg(conf.ColorFaint),
-			sterm.Color256Fg(conf.ColorMid),
-		}
-		fmt.Printf("%s        ____     __             %s╭──────────────────╮\n", logoColors[0], logoColors[6])
-		fmt.Printf("%s ____  / __/  __/ /_____  ____  %s│%s  author: %sssleert %s│\n", logoColors[1], logoColors[6], logoColors[4], sterm.Reset, logoColors[6])
-		fmt.Printf("%s/_  / / /_|'|/_/ __/ __ \\/ __ \\ %s│%s    lang: %sgo      %s│\n", logoColors[2], logoColors[6], logoColors[3], sterm.Reset, logoColors[6])
-		fmt.Printf("%s / /_/ __/>  </ /_/ /_/ / /_/ / %s│%s version: %s%s   %s│\n", logoColors[3], logoColors[6], logoColors[2], sterm.Reset, self.Version, logoColors[6])
-		fmt.Printf("%s/___/_/ /_/|_|\\__/\\____/ .___/  %s│%s  commit: %s%s %s│\n", logoColors[4], logoColors[6], logoColors[1], sterm.Reset, self.Commit, logoColors[6])
-		fmt.Printf("%s                      /_/       %s╰──────────────────╯%s\n", logoColors[5], logoColors[6], sterm.Reset)
-	}
+	config     string
+	clearCache bool
+	version    bool
+	test       bool
 )
 
 func init() {
 	flag.BoolVar(&version, "v", false, "get version info")
+	flag.BoolVar(&version, "version", false, "get version info")
 	flag.StringVar(&config, "c", "", "set config location")
+	flag.BoolVar(&clearCache, "l", false, "clear cache")
+	flag.BoolVar(&clearCache, "clear", false, "clear cache")
+	flag.StringVar(&config, "config", "", "set config location")
 	flag.BoolVar(&test, "t", false, "test flag")
+	flag.Usage = arts.HelpFunc
 	flag.Parse()
 }
 
 func main() {
 	if version {
-		versionFunc()
+		arts.VersionFunc()
+		return
+	}
+	if clearCache {
+		fmt.Println("not implemented")
+		fmt.Println("dont worry the cache hasnt been implemented yet either")
 		return
 	}
 	if test {
-		fmt.Println("asd")
+		fmt.Println("test flag)))")
 		return
 	}
 
@@ -78,18 +70,6 @@ func main() {
 		msg.ExitMsg(err)
 	}
 
-	// stop drawing and restore term state
-	defer func() {
-		s.Stop()
-		os.Exit(0)
-	}()
-
-	exitFromDraw := func(err error) {
-		s.Stop()
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 	// start data collection
 	d := data.Start()
 	datadyn := &s.DataDyn
@@ -98,37 +78,41 @@ func main() {
 	// first screen update
 	err = data.Update(datastat)
 	if err != nil {
-		exitFromDraw(err)
+		s.Stop()
+		fmt.Println(err)
+		os.Exit(1)
+
 	}
 	fmt.Print(s.Static())
 	fmt.Print(s.Redraw())
 
 	// usr input
 	inputch := make(chan rune)
-	go input.Handle(inputch)
+	stopch := make(chan bool) // stop msg for input goroutine
+	go input.Handle(inputch, stopch)
 
 	// main loop
-	var ch rune
 	ticker := time.NewTicker(conf.Update)
 	for {
 		select {
 		case <-ticker.C:
 			err := d.Update(datadyn)
 			if err != nil {
-				exitFromDraw(err)
+				s.Stop()
+				fmt.Println(err)
+				os.Exit(1)
 			}
-			buf := s.Dynamic()
-			fmt.Print(buf)
-		case ch = <-inputch:
+			fmt.Print(s.Dynamic())
+		case ch := <-inputch:
 			switch ch {
 			case 'q', 'Q', 'й', 'Й':
 				s.Stop()
-				os.Exit(0)
+				stopch <- true
+				return
 			case 'r', 'R', 'к', 'К':
 				fmt.Print(s.Redraw())
-			default:
-				continue
 			}
+			stopch <- false
 		}
 	}
 }
