@@ -19,8 +19,13 @@ The code is written in `Go` because it is blue :cup_with_straw:.
 <br>
 
 # Installation ☁️
+with `curl`
+```fish
+curl -sSL raw.githubusercontent.com/ssleert/zfxtop/master/install.sh | sh
 ```
-Loading... 🚧
+with `wget`
+```fish
+wget -qO- raw.githubusercontent.com/ssleert/zfxtop/master/install.sh | sh
 ```
 
 # Configuration ⚙️
