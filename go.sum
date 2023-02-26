@@ -2,12 +2,16 @@ github.com/ssleert/ginip v0.0.0-20230129095011-281b35abb363 h1:8KhzJiW7UkKFoYhCK
 github.com/ssleert/ginip v0.0.0-20230129095011-281b35abb363/go.mod h1:kFrO03HveobMT8njoWS39u4ZlyeAJmR1JkS2hWDkIkM=
 github.com/ssleert/ginip v0.0.0-20230216143908-88dd7fec65f8 h1:E5CYH2DQnRbvdHvPtB6As32m4wXRU+HErLM1oplZnMA=
 github.com/ssleert/ginip v0.0.0-20230216143908-88dd7fec65f8/go.mod h1:eHLy0WJhTsxRJrVKcysV7FwJmKtf8aO9qFhr52Z4sJA=
+github.com/ssleert/ginip v0.0.0-20230226084332-8b4abf96c4c9 h1:j3KQcyIswz846vN2fQg3+Dowm5L2xd7oc51XBDDb2nA=
+github.com/ssleert/ginip v0.0.0-20230226084332-8b4abf96c4c9/go.mod h1:G3jty3FAZ+/siAPVRU5LkzlW9M1jgv8LTSEuPSgO1nw=
 github.com/ssleert/memory v0.0.0-20230103231353-e1d09fb8d47b h1:2pAOrnJYvnCuHiTKGV818BXd7QlCNdVXulzul1vx4Jg=
 github.com/ssleert/memory v0.0.0-20230103231353-e1d09fb8d47b/go.mod h1:8la+hPQ08C+pYCShvQB24O1KEfw223INgrf3vZ42GGg=
 github.com/ssleert/memory v0.0.0-20230211074400-a351b7312fc4 h1:Gm21fWGaiKVg4yTiStfERNFrjRQ+B5/qe/wkPiZdPF8=
 github.com/ssleert/memory v0.0.0-20230211074400-a351b7312fc4/go.mod h1:8la+hPQ08C+pYCShvQB24O1KEfw223INgrf3vZ42GGg=
 github.com/ssleert/memory v0.0.0-20230216143742-eeb794db1c2d h1:bYbz5VIy1qWhAVedIXOnICbSKbzKy+1m+XKnFyrysaY=
 github.com/ssleert/memory v0.0.0-20230216143742-eeb794db1c2d/go.mod h1:ohtjMjL7DPi8Yu09tfg3poS9evouRia8resAsp/VOzA=
+github.com/ssleert/memory v0.0.0-20230226084404-d38f9dbae5c8 h1:GLlcS5Yqp6Tvr78p2ASuCvgTgFik/f5J87pG6YNi1LI=
+github.com/ssleert/memory v0.0.0-20230226084404-d38f9dbae5c8/go.mod h1:qvtv/pPP8it5AaBnZ1nAMw+T5L8WUpP9zWKoT/415p4=
 github.com/ssleert/sfolib v0.0.0-20230203143112-9ac4d7201928 h1:PYpQfxD90NxhIss/tEHrNbF2Rwa9R29kBDnt1gCY3Z8=
 github.com/ssleert/sfolib v0.0.0-20230203143112-9ac4d7201928/go.mod h1:/9/wK9KIObc44RFZLx93S8vFbGLUG34vh48fB7NNAD4=
 github.com/ssleert/sfolib v0.0.0-20230216145343-aaa0c738e5c0 h1:z/fbWmleWo0KNKpXz9AY09rC3lNMgx+Fy3/p9ZI7vpE=
@@ -20,6 +24,8 @@ github.com/ssleert/sterm v0.0.0-20230212212335-5900e034f674 h1:5jXVNKllpJuelKeye
 github.com/ssleert/sterm v0.0.0-20230212212335-5900e034f674/go.mod h1:bVZzi9tuQ8EOgtaHC53nCoUFCwBLLRVtCm9+DRwpcG8=
 github.com/ssleert/sterm v0.0.0-20230212222435-168aab76b00a h1:CnB51PeY4DrMf0rByEfFoZX78zPK1DsXqQWnTaCstTw=
 github.com/ssleert/sterm v0.0.0-20230212222435-168aab76b00a/go.mod h1:bVZzi9tuQ8EOgtaHC53nCoUFCwBLLRVtCm9+DRwpcG8=
+github.com/ssleert/sterm v0.0.0-20230226084438-89de735c6eaf h1:SyYDHVofnSkptHRgj6CpLOdOdzWuSqrBIxo/zVsUnEE=
+github.com/ssleert/sterm v0.0.0-20230226084438-89de735c6eaf/go.mod h1:dkEW/d0LsWgsBoWr6x0wdUa1HxJfsqHvXWrJ0BuaqVs=
 golang.org/x/sys v0.5.0 h1:MUK/U/4lj1t1oPg0HfuXDN/Z1wv31ZJ/YcPiGccS4DU=
 golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.4.0 h1:O7UWfv5+A2qiuulQk30kVinPoMtoIPeVaKLEgLpVkvg=

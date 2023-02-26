@@ -1,2 +1,6 @@
-go fmt ./...
-go generate ./...
+main() {
+  format
+  generate
+}
+
+main
