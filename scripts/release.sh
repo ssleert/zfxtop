@@ -1,7 +1,9 @@
 #!/bin/sh
-. 'scripts/lib.sh'
+. './scripts/lib.sh'
 
 CGO_ENABLED=0
+GOFLAGS="-ldflags='-s -w' -gcflags=all='-B -C'"
+
 NAME='zfxtop'
 VERSION="$(cat VERSION)"
 RELEASE='./release'
@@ -32,7 +34,7 @@ compile() {
 
   for arch in $ARCHES; do
     for os in $OSES; do
-      GOARCH="$arch" GOOS="$os" go build -ldflags='-s -w' -gcflags=all='-B -C' -o "${BDIR}/${NAME}_${VERSION}_${os}_${arch}" "cmd/${NAME}/${NAME}.go"
+      GOARCH="$arch" GOOS="$os" go build -o "${BDIR}/${NAME}_${VERSION}_${os}_${arch}" "cmd/${NAME}/${NAME}.go"
       [ $? -ne 0 ] && {
         die 'exeption during compilation'
       }
@@ -69,7 +71,6 @@ gen_checksum() {
 
 main() {
   clear
-  format
   generate
   compile
   package
