@@ -132,7 +132,7 @@ main() {
   fi
 
   mkdir -p "$OUT"
-  msg "Moving to '${OUT}'"
+  msg "Moving to '/usr/bin'"
 
   if has doas; then
     doas mv "${TMPDIR}/${NAME}_${VERSION}_${OS}_${ARCH}" "${OUT}/${NAME}"
