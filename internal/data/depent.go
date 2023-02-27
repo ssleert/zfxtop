@@ -288,7 +288,7 @@ func getCpuTemp(ch chan int, errch chan error) {
 			errch <- err
 			ch <- 0
 		}
-		if string(f) == "coretemp\n" {
+		if string(f) == "coretemp\n" || string(f) == "k10temp\n" {
 			isCoreTemp = true
 			coreTempDir = hwmn
 		}
