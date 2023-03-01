@@ -24,13 +24,21 @@ var (
 )
 
 func init() {
+	// version
 	flag.BoolVar(&version, "v", false, "get version info")
 	flag.BoolVar(&version, "version", false, "get version info")
+
+	// config
 	flag.StringVar(&config, "c", "", "set config location")
+	flag.StringVar(&config, "config", "", "set config location")
+
+	// clear
 	flag.BoolVar(&clearCache, "l", false, "clear cache")
 	flag.BoolVar(&clearCache, "clear", false, "clear cache")
-	flag.StringVar(&config, "config", "", "set config location")
+
+	// test flags
 	flag.BoolVar(&test, "t", false, "test flag")
+
 	flag.Usage = arts.HelpFunc
 	flag.Parse()
 }
