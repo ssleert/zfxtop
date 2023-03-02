@@ -9,45 +9,45 @@ import (
 // draw static info for bat block
 func (s *Info) memStatic() {
 	s.tui.WriteString(s.colorMid)
-	s.putStr(28, s.y+11, " GiB ")
-	s.putStr(30, s.y+12, "GiB")
-	s.putStr(13, s.y+12, "%")
-	s.putStr(30, s.y+18, "GiB")
-	s.putStr(18, s.y+18, "%")
-	s.putStr(30, s.y+24, "GiB")
-	s.putStr(13, s.y+24, "%")
+	s.putStr(s.x+25, s.y+10, " GiB ")
+	s.putStr(s.x+27, s.y+11, "GiB")
+	s.putStr(s.x+10, s.y+11, "%")
+	s.putStr(s.x+27, s.y+17, "GiB")
+	s.putStr(s.x+15, s.y+17, "%")
+	s.putStr(s.x+27, s.y+23, "GiB")
+	s.putStr(s.x+10, s.y+23, "%")
 
 	s.reset()
 
-	s.putStr(6, s.y+12, "Used")
-	s.putStr(6, s.y+18, "Available")
-	s.putStr(6, s.y+24, "Free")
+	s.putStr(s.x+3, s.y+11, "Used")
+	s.putStr(s.x+3, s.y+17, "Available")
+	s.putStr(s.x+3, s.y+23, "Free")
 
-	s.putStr(27, s.y+11, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
-	s.putStr(27, s.y+11, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
+	s.putStr(s.x+25, s.y+10, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
+	s.putStr(s.x+25, s.y+10, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
 }
 
 // draw dynamic info for bat block
 func (s *Info) memDynamic() {
-	s.putStr(14, s.y+12, "                ")
+	s.putStr(s.x+11, s.y+11, "                ")
 	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Mem.UsedPerc))
-	s.putStr(12, s.y+12, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.UsedPerc)))
+	s.putStr(s.x+9, s.y+11, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.UsedPerc)))
 	s.reset()
-	s.putStr(28, s.y+12, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Used)))
+	s.putStr(s.x+25, s.y+11, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Used)))
 
-	s.putStr(19, s.y+18, "           ")
+	s.putStr(s.x+16, s.y+17, "           ")
 	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Mem.AvailablePerc))
-	s.putStr(17, s.y+18, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.AvailablePerc)))
+	s.putStr(s.x+14, s.y+17, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.AvailablePerc)))
 	s.reset()
-	s.putStr(28, s.y+18, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Available)))
+	s.putStr(s.x+25, s.y+17, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Available)))
 
-	s.putStr(14, s.y+24, "                ")
+	s.putStr(s.x+11, s.y+23, "                ")
 	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.Mem.FreePerc))
-	s.putStr(12, s.y+24, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.FreePerc)))
+	s.putStr(s.x+9, s.y+23, sterm.RevPrint(" "+strconv.Itoa(s.DataDyn.Mem.FreePerc)))
 	s.reset()
-	s.putStr(28, s.y+24, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Free)))
+	s.putStr(s.x+25, s.y+23, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataDyn.Mem.Free)))
 
-	s.drawGraph(6, s.y+16, 4, 27, s.DataDyn.Graph.MemUsed[:])
-	s.drawGraph(6, s.y+22, 4, 27, s.DataDyn.Graph.MemAvailable[:])
-	s.drawGraph(6, s.y+28, 4, 27, s.DataDyn.Graph.MemFree[:])
+	s.drawGraph(s.x+3, s.y+15, 4, 27, s.DataDyn.Graph.MemUsed[:])
+	s.drawGraph(s.x+3, s.y+21, 4, 27, s.DataDyn.Graph.MemAvailable[:])
+	s.drawGraph(s.x+3, s.y+27, 4, 27, s.DataDyn.Graph.MemFree[:])
 }

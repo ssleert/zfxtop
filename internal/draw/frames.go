@@ -18,29 +18,29 @@ func (s *Info) frames() {
 	s.tui.WriteString(s.colorFaint)
 
 	// cpu frame
-	buf, _ := sterm.FrameArea(s.borders, 4, s.y+2, 66, s.y+10)
+	buf, _ := sterm.FrameArea(s.borders, s.x+1, s.y+1, s.x+63, s.y+9)
 	s.tui.WriteString(buf)
 
 	// mem frame
-	buf, _ = sterm.FrameArea(s.borders, 4, s.y+11, 34, s.y+29)
+	buf, _ = sterm.FrameArea(s.borders, s.x+1, s.y+10, s.x+31, s.y+28)
 	s.tui.WriteString(buf)
-	s.separator(4, s.y+17, 31)
-	s.separator(4, s.y+23, 31)
+	s.separator(s.x+1, s.y+16, 31)
+	s.separator(s.x+1, s.y+22, 31)
 
 	// swap frame
-	buf, _ = sterm.FrameArea(s.borders, 36, s.y+11, 66, s.y+17)
+	buf, _ = sterm.FrameArea(s.borders, s.x+33, s.y+10, s.x+63, s.y+16)
 	s.tui.WriteString(buf)
 
 	// disk frame
-	buf, _ = sterm.FrameArea(s.borders, 36, s.y+18, 66, s.y+22)
+	buf, _ = sterm.FrameArea(s.borders, s.x+33, s.y+17, s.x+63, s.y+21)
 	s.tui.WriteString(buf)
 
 	// battery frame
-	buf, _ = sterm.FrameArea(s.borders, 36, s.y+23, 66, s.y+25)
+	buf, _ = sterm.FrameArea(s.borders, s.x+33, s.y+22, s.x+63, s.y+24)
 	s.tui.WriteString(buf)
 
 	// info frame
-	buf, _ = sterm.FrameArea(s.borders, 36, s.y+26, 66, s.y+29)
+	buf, _ = sterm.FrameArea(s.borders, s.x+33, s.y+25, s.x+63, s.y+28)
 	s.tui.WriteString(buf)
 
 	// buttons
@@ -48,7 +48,7 @@ func (s *Info) frames() {
 	s.tui.WriteString(
 		fmt.Sprintf(
 			"%s%sQ%s - quit | %sR%s - redraw",
-			sterm.CursorTo(26, s.y+30),
+			sterm.CursorTo(s.x+23, s.y+29),
 			s.colorMid,
 			s.colorFaint,
 			s.colorMid,

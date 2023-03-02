@@ -23,10 +23,10 @@ func (s *Info) titles() {
 		infoTitle = iconed{s.colorMid, "", "INFO"}
 	)
 
-	s.writeTitle(6, s.y+2, &cpuTitle)
-	s.writeTitle(6, s.y+11, &memTitle)
-	s.writeTitle(38, s.y+11, &swapTitle)
-	s.writeTitle(38, s.y+18, &diskTitle)
-	s.writeTitle(38, s.y+23, &batTitle)
-	s.writeTitle(38, s.y+26, &infoTitle)
+	s.writeTitle(s.x+3, s.y+1, &cpuTitle)
+	s.writeTitle(s.x+3, s.y+10, &memTitle)
+	s.writeTitle(s.x+35, s.y+10, &swapTitle)
+	s.writeTitle(s.x+35, s.y+17, &diskTitle)
+	s.writeTitle(s.x+35, s.y+22, &batTitle)
+	s.writeTitle(s.x+35, s.y+25, &infoTitle)
 }

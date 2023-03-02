@@ -11,9 +11,9 @@ func (s *Info) infoStatic() {
 		hostName   = iconed{s.colorList[1], "", "Hostname"}
 	)
 
-	s.writeIconed(38, s.y+27, &distroName)
-	s.writeIconed(38, s.y+28, &hostName)
+	s.writeIconed(s.x+35, s.y+26, &distroName)
+	s.writeIconed(s.x+35, s.y+27, &hostName)
 
-	s.putStr(64, s.y+27, sterm.RevPrint(s.DataStat.DistroName))
-	s.putStr(64, s.y+28, sterm.RevPrint(s.DataStat.HostName))
+	s.putStr(s.x+61, s.y+26, sterm.RevPrint(s.DataStat.DistroName))
+	s.putStr(s.x+61, s.y+27, sterm.RevPrint(s.DataStat.HostName))
 }

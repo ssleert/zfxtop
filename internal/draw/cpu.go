@@ -9,7 +9,7 @@ import (
 // draw static info for bat block
 func (s *Info) cpuStatic() {
 	s.reset()
-	s.putStr(64, s.y+2, sterm.RevPrint(" "+s.DataStat.CpuName+" "))
+	s.putStr(s.x+61, s.y+1, sterm.RevPrint(" "+s.DataStat.CpuName+" "))
 }
 
 // draw dynamic info for bat block
@@ -21,25 +21,25 @@ func (s *Info) cpuDynamic() {
 	)
 
 	s.reset()
-	s.tui.WriteString(sterm.CursorTo(30, s.y+2))
+	s.tui.WriteString(sterm.CursorTo(s.x+27, s.y+1))
 	s.tui.WriteRune(' ')
 	s.tui.WriteString(s.DataDyn.Time.Format("15:04:05"))
 	s.tui.WriteRune(' ')
 
-	s.drawGraph(6, s.y+9, 7, 59, s.DataDyn.Graph.CpuLoad[:])
+	s.drawGraph(s.x+3, s.y+8, 7, 59, s.DataDyn.Graph.CpuLoad[:])
 	s.tui.WriteString(s.colorFaint)
-	buf, _ := sterm.CharArea(' ', 6, s.y+3, 20, s.y+7)
+	buf, _ := sterm.CharArea(' ', s.x+3, s.y+2, s.x+17, s.y+6)
 	s.tui.WriteString(buf)
-	buf, _ = sterm.FrameArea(s.borders, 6, s.y+3, 20, s.y+7)
+	buf, _ = sterm.FrameArea(s.borders, s.x+3, s.y+2, s.x+17, s.y+6)
 	s.tui.WriteString(buf)
 
-	s.writeIconed(8, s.y+4, &load)
+	s.writeIconed(s.x+5, s.y+3, &load)
 
 	// nerd fonts FUCK YOU
 	// s.writeIconed(8, s.y+5, &freq)
 	// '龍' icon weight is bigger than normal char
 
-	s.tui.WriteString(sterm.CursorTo(8, s.y+5))
+	s.tui.WriteString(sterm.CursorTo(s.x+5, s.y+4))
 	if s.icons {
 		s.tui.WriteString(freq[0])
 		s.tui.WriteString(freq[1])
@@ -49,23 +49,23 @@ func (s *Info) cpuDynamic() {
 
 	// -------------------------------------------
 
-	s.writeIconed(8, s.y+6, &temp)
+	s.writeIconed(s.x+5, s.y+5, &temp)
 
-	s.tui.WriteString(sterm.CursorTo(18, s.y+4))
+	s.tui.WriteString(sterm.CursorTo(s.x+15, s.y+3))
 	s.tui.WriteString(s.colorMid)
 	s.tui.WriteRune('%')
 	s.tui.WriteString(sterm.CursorLeft(2))
 	s.tui.WriteString(colorForPercent(&s.colorTempr, s.DataDyn.CpuLoad))
 	s.tui.WriteString(sterm.RevPrint(" " + strconv.Itoa(s.DataDyn.CpuLoad)))
 
-	s.tui.WriteString(sterm.CursorTo(16, s.y+5))
+	s.tui.WriteString(sterm.CursorTo(s.x+13, s.y+4))
 	s.tui.WriteString(s.colorMid)
 	s.tui.WriteString("ghz")
 	s.tui.WriteString(sterm.CursorLeft(4))
 	s.tui.WriteString(colorForFreq(&s.colorTempr, s.DataDyn.CpuFreq))
 	s.tui.WriteString(sterm.RevPrint(fmt.Sprintf("%.1f", s.DataDyn.CpuFreq)))
 
-	s.tui.WriteString(sterm.CursorTo(17, s.y+6))
+	s.tui.WriteString(sterm.CursorTo(s.x+14, s.y+5))
 	s.tui.WriteString(s.colorMid)
 	s.tui.WriteString("°C")
 	s.tui.WriteString(sterm.CursorLeft(3))

@@ -82,8 +82,8 @@ func Start(
 		return nil, err
 	}
 	info := Info{
-		x:          x - 1,
-		y:          y - 1,
+		x:          x + 3 - 1,
+		y:          y + 1 - 1,
 		s:          s,
 		icons:      ico,
 		borders:    brd,
