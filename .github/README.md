@@ -29,6 +29,15 @@ with `wget`
 ```fish
 wget -qO- raw.githubusercontent.com/ssleert/zfxtop/master/install.sh | sh
 ```
+with `podman/docker`
+```fish
+podman build . -t zfxtop
+podman run -it --rm --name zfxtop zfxtop
+```
+> btw you can set alias with podman and use it as regular command
+```bash
+alias zfxtop="podman run -it --rm --name zfxtop zfxtop"
+```
 
 # Configuration ⚙️
 I decided that using `toml` or `yaml` makes no sense for such small configuration files, but it **increases code size**, so I decided to use `ini`
