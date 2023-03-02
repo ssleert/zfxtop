@@ -29,15 +29,6 @@ with `wget`
 ```fish
 wget -qO- raw.githubusercontent.com/ssleert/zfxtop/master/install.sh | sh
 ```
-with `podman/docker`
-```fish
-podman build . -t zfxtop
-podman run -it --rm --name zfxtop zfxtop
-```
-> btw you can set alias with podman and use it as regular command
-```bash
-alias zfxtop="podman run -it --rm --name zfxtop zfxtop"
-```
 
 # Configuration ⚙️
 I decided that using `toml` or `yaml` makes no sense for such small configuration files, but it **increases code size**, so I decided to use `ini`
@@ -102,6 +93,15 @@ If you have a `CPU` with `amd64` architecture you can try to **build** with **op
 # v2, v3, v4 supported
 GOAMD64=v3 ./scripts/build.sh
 ```
+with `podman/docker`
+```fish
+podman build . -t zfxtop
+podman run -it --rm --name zfxtop zfxtop
+```
+> btw you can set alias with podman and use it as regular command
+```bash
+alias zfxtop="podman run -it --rm --name zfxtop zfxtop"
+```
 
 # Contribute
 Before contributing, please run `contribute.sh` script
@@ -115,3 +115,15 @@ Before contributing, please run `contribute.sh` script
 ### made with 🫀 by `sfome`
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
