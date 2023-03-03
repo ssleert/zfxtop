@@ -126,7 +126,7 @@ main() {
   tar -xzf "$TAR_FILE" -C "$TMPDIR/"
 
   if has zfxtop; then
-    OUT="$(dirname "$(command -v pat)")"
+    OUT="$(dirname "$(command -v zfxtop)")"
   else
     OUT="/usr/local/bin"
   fi
