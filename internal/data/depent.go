@@ -4,8 +4,6 @@ package data
 
 import (
 	"errors"
-	"github.com/ssleert/memory"
-	"github.com/ssleert/sfolib"
 	"math"
 	"os"
 	"path/filepath"
@@ -13,6 +11,9 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/ssleert/memory"
+	"github.com/ssleert/sfolib"
 )
 
 // +================= static info functions =================+
@@ -272,8 +273,9 @@ func getCpuFreq(ch chan float64, errch chan error) {
 
 func getCpuTemp(ch chan int, errch chan error) {
 	var (
-		isCoreTemp  bool
-		coreTempDir string
+		isCoreTemp bool
+		isK10Temp  bool
+		cpuTempDir string
 	)
 
 	hwms, err := os.ReadDir("/sys/class/hwmon")
@@ -288,50 +290,99 @@ func getCpuTemp(ch chan int, errch chan error) {
 			errch <- err
 			ch <- 0
 		}
-		if string(f) == "coretemp\n" || string(f) == "k10temp\n" {
+		if string(f) == "coretemp\n" {
 			isCoreTemp = true
-			coreTempDir = hwmn
+			cpuTempDir = hwmn
+			break
+		}
+		if string(f) == "k10temp\n" {
+			isK10Temp = true
+			cpuTempDir = hwmn
+			break
 		}
 	}
 
-	if isCoreTemp {
-		d, err := os.ReadDir(coreTempDir)
-		if err != nil {
-			errch <- err
-			ch <- 0
-		}
-
-		for {
-			var (
-				temp  int
-				count float64
-			)
-			for _, e := range d {
-				fn := e.Name()
-				if strings.HasPrefix(fn, "temp") && strings.HasSuffix(fn, "_input") {
-					f, err := os.ReadFile(coreTempDir + fn)
-					if err != nil {
-						errch <- err
-						ch <- 0
-					}
-					t, err := strconv.Atoi(string(f[:len(f)-1]))
-					if err != nil {
-						errch <- err
-						ch <- 0
-					}
-					temp += t
-					count++
-				}
-			}
-			errch <- nil
-			ch <- int(math.Round(float64(temp)/count)) / 1000
-		}
+	if isK10Temp {
+		getK10Temp(cpuTempDir, ch, errch)
+	} else if isCoreTemp {
+		getCoreTemp(cpuTempDir, ch, errch)
 	}
 
 	for {
 		errch <- nil
 		ch <- 0
 	}
+}
+
+func getK10Temp(cpuTempDir string, ch chan int, errch chan error) {
+	d, err := os.ReadDir(cpuTempDir)
+	if err != nil {
+		errch <- err
+		ch <- 0
+	}
+
+	for {
+		for _, e := range d {
+			fn := e.Name()
+			if strings.HasPrefix(fn, "temp") && strings.HasSuffix(fn, "_label") {
+				f, err := os.ReadFile(cpuTempDir + fn)
+				if err != nil {
+					errch <- err
+					ch <- 0
+				}
+				if string(f) == "Tctl\n" {
+					t, err := os.ReadFile(cpuTempDir + strings.Replace(fn, "_label", "_input", -1))
+					if err != nil {
+						errch <- err
+						ch <- 0
+					}
+					tp, err := strconv.Atoi(string(t[:len(t)-2]))
+					if err != nil {
+						errch <- err
+						ch <- -1
+					}
+					errch <- nil
+					ch <- int(tp / 100)
+				}
+				break
+			}
+		}
+	}
+}
+
+func getCoreTemp(cpuTempDir string, ch chan int, errch chan error) {
+	d, err := os.ReadDir(cpuTempDir)
+	if err != nil {
+		errch <- err
+		ch <- 0
+	}
+
+	for {
+		var (
+			temp  int
+			count float64
+		)
+		for _, e := range d {
+			fn := e.Name()
+			if strings.HasPrefix(fn, "temp") && strings.HasSuffix(fn, "_input") {
+				f, err := os.ReadFile(cpuTempDir + fn)
+				if err != nil {
+					errch <- err
+					ch <- 0
+				}
+				t, err := strconv.Atoi(string(f[:len(f)-1]))
+				if err != nil {
+					errch <- err
+					ch <- -1
+				}
+				temp += t
+				count++
+			}
+		}
+		errch <- nil
+		ch <- int(math.Round(float64(temp)/count)) / 1000
+	}
+
 }
 
 func getMem(memch chan memoryInfo, errch chan error) {
