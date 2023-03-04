@@ -29,6 +29,7 @@ with `wget`
 ```fish
 wget -qO- raw.githubusercontent.com/ssleert/zfxtop/master/install.sh | sh
 ```
+Or if on Arch you can install the aur package zfxtop
 
 # Configuration ⚙️
 I decided that using `toml` or `yaml` makes no sense for such small configuration files, but it **increases code size**, so I decided to use `ini`
