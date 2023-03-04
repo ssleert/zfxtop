@@ -1,7 +1,7 @@
 github.com/ssleert/ginip v0.0.0-20230227154124-b54e1db9333a h1:bL19gkN3iNjPoK7qqdQZzfd67t1yoSr9DFgRhsBLm98=
 github.com/ssleert/ginip v0.0.0-20230227154124-b54e1db9333a/go.mod h1:VpRtYFcXckbjKI6ebTb6+I7YOz3wOVvTllYOh+6tXpI=
-github.com/ssleert/memory v0.0.0-20230226084404-d38f9dbae5c8 h1:GLlcS5Yqp6Tvr78p2ASuCvgTgFik/f5J87pG6YNi1LI=
-github.com/ssleert/memory v0.0.0-20230226084404-d38f9dbae5c8/go.mod h1:qvtv/pPP8it5AaBnZ1nAMw+T5L8WUpP9zWKoT/415p4=
+github.com/ssleert/memory v0.0.0-20230227154604-7c55c1900bf7 h1:JaffIND94x1UZd7Y5R2Zx4lcXWZSGusNTvZYK0eTM0g=
+github.com/ssleert/memory v0.0.0-20230227154604-7c55c1900bf7/go.mod h1:mjndgF3Ly3nMMw4GYOGWf8SA36ddIVAPpH11WquUqnA=
 github.com/ssleert/sfolib v0.0.0-20230227101151-c26a674aa15c h1:CaAWvlzC4/mas6HgkLBKhm+3Q2qne2a4ev4Z9GFqXHM=
 github.com/ssleert/sfolib v0.0.0-20230227101151-c26a674aa15c/go.mod h1:O81lzFYjUfZbbHBfz/Gpv2yTZzEghb0Qy8a/CX9ZdMU=
 github.com/ssleert/sterm v0.0.0-20230227155425-62ced4a06aac h1:z4Tl3wU0eidFkKauSzh/MdxloiigK2p1Hm/r7T+3GPw=
