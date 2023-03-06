@@ -17,10 +17,10 @@ import (
 )
 
 var (
+	version    bool
 	config     string
 	clearCache bool
-	version    bool
-	test       bool
+	center     bool
 )
 
 func init() {
@@ -36,8 +36,9 @@ func init() {
 	flag.BoolVar(&clearCache, "l", false, "clear cache")
 	flag.BoolVar(&clearCache, "clear", false, "clear cache")
 
-	// test flags
-	flag.BoolVar(&test, "t", false, "test flag")
+	// center tui
+	flag.BoolVar(&center, "t", false, "center tui")
+	flag.BoolVar(&center, "center", false, "center tui")
 
 	flag.Usage = arts.HelpFunc
 	flag.Parse()
@@ -53,10 +54,6 @@ func main() {
 		fmt.Println("dont worry the cache hasnt been implemented yet either")
 		return
 	}
-	if test {
-		fmt.Println("test flag)))")
-		return
-	}
 
 	// parse config
 	err := conf.Parse(config)
@@ -64,10 +61,18 @@ func main() {
 		msg.ExitMsg(err)
 	}
 
+	// set conf value true
+	// if flag value true
+	// ))
+	if center {
+		conf.Center = true
+	}
+
 	// start draw module with args from config
 	s, err := draw.Start(
 		conf.Icons,
 		conf.Borders,
+		conf.Center,
 		sterm.Color256Fg(conf.ColorMid),
 		sterm.Color256Fg(conf.ColorFaint),
 		conv.SColorsFg(conf.ColorLoad),

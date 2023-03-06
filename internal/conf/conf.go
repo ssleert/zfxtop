@@ -15,6 +15,7 @@ var (
 	Icons      = true
 	Borders    = sterm.RoundedBorders
 	Colors     = true
+	Center     = false
 	ColorFaint = 238
 	ColorMid   = 245
 	ColorLoad  = [6]int{27, 63, 99, 135, 171, 207}
@@ -25,6 +26,7 @@ var (
 	iconsVar   = "icons"
 	bordersVar = "borders"
 	colorsVar  = "colors"
+	centerVar  = "center"
 	faintVar   = "faint"
 	midVar     = "mid"
 	loadVars   = [6]string{
@@ -96,6 +98,12 @@ func parseTui(ini *ginip.Ini) error {
 		return err
 	}
 	Colors = conf.(bool)
+
+	conf, _ = ini.GetValueBool(sect, centerVar)
+	// now without error)
+	// backward compatibility
+
+	Center = conf.(bool)
 
 	return nil
 }

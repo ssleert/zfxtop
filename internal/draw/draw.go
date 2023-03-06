@@ -21,6 +21,7 @@ type Info struct {
 	// from user
 	icons      bool
 	borders    sterm.Borders
+	center     bool // center tui
 	colorMid   string
 	colorFaint string
 	colorLoad  [6]string
@@ -30,7 +31,10 @@ type Info struct {
 
 const (
 	SizeY = 30
-	SizeX = 68
+	SizeX = 66
+
+	SizeYCenter = 29
+	SizeXCenter = 63
 )
 
 func (s *Info) putStr(x, y int, str string) {
@@ -60,6 +64,7 @@ func (s *Info) reset() {
 func Start(
 	ico bool,
 	brd sterm.Borders,
+	c bool,
 	cm, cf string,
 	cl, ct [6]string,
 	cli [3]string,
@@ -71,22 +76,35 @@ func Start(
 	if tsx < SizeX || tsy < SizeY {
 		return nil, &TermSizeTooLittle{tsx, tsy}
 	}
-	fmt.Print(sterm.ReserveArea(SizeY))
+
 	fmt.Print(sterm.CursorHide())
-	x, y, err := sterm.CursorPos()
-	if err != nil {
-		return nil, err
+
+	var x, y int
+	if !c {
+		fmt.Print(sterm.ReserveArea(SizeY))
+		x, y, err = sterm.CursorPos()
+		if err != nil {
+			return nil, err
+		}
+
+		x += 3 - 1
+		y += 1 - 1
+	} else {
+		fmt.Print(sterm.SaveAttrs())
 	}
+
 	s, err := sterm.GetState()
 	if err != nil {
 		return nil, err
 	}
+
 	info := Info{
-		x:          x + 3 - 1,
-		y:          y + 1 - 1,
+		x:          x,
+		y:          y,
 		s:          s,
 		icons:      ico,
 		borders:    brd,
+		center:     c,
 		colorMid:   cm,
 		colorFaint: cf,
 		colorLoad:  cl,
@@ -99,8 +117,14 @@ func Start(
 // stop tui drawing
 func (s *Info) Stop() {
 	fmt.Print(sterm.CursorShow())
-	fmt.Print(sterm.CursorTo(1, s.y+1))
-	fmt.Print(sterm.ClearScreenDown())
+	if !s.center {
+		fmt.Print(sterm.CursorTo(1, s.y))
+		fmt.Print(sterm.ClearScreenDown())
+	} else {
+		fmt.Print(sterm.ClearEntireScreen())
+		fmt.Print(sterm.CursorTo(1, 1))
+	}
+
 	fmt.Print(sterm.Reset)
 	sterm.Restore(s.s)
 }
@@ -114,11 +138,23 @@ func (s *Info) Redraw() string {
 	return buf.String()
 }
 
+func (s *Info) GetCursorDrawPos() (int, int) {
+	return 0, 0
+}
+
 // draw static info
 // executes on program start
 // or on redraw
 func (s *Info) Static() string {
 	s.tui.Reset()
+
+	if s.center {
+		x, y, _ := sterm.Size()
+		s.x = x/2 - SizeXCenter/2
+		s.y = y/2 - SizeYCenter/2
+		s.tui.WriteString(sterm.ClearEntireScreen())
+	}
+
 	s.frames()
 	s.titles()
 	s.infoStatic()

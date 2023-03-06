@@ -59,6 +59,7 @@ func HelpFunc() {
   │──────────────┼─────────────────────│
   │ %s-%sc %s--%sconfig  %s│ %sset config location %s│
   │ %s-%sl %s--%sclear   %s│ %sclear cache         %s│
+  │ %s-%st %s--%scenter  %s│ %scenter tui          %s│
   │ %s-%sv %s--%sversion %s│ %sget version info    %s│
   │ %s-%sh %s--%shelp    %s│ %sget help info       %s│
   ╰────────────────────────────────────╯%s
@@ -67,6 +68,7 @@ func HelpFunc() {
 		colors[5], colors[4], colors[3], colors[2], colors[1], colors[0], colors[7], sterm.Reset,
 		colors[6],
 		colors[7], colors[6], colors[7], colors[6],
+		colors[7], sterm.Reset, colors[7], sterm.Reset, colors[6], sterm.Reset, colors[6],
 		colors[7], sterm.Reset, colors[7], sterm.Reset, colors[6], sterm.Reset, colors[6],
 		colors[7], sterm.Reset, colors[7], sterm.Reset, colors[6], sterm.Reset, colors[6],
 		colors[7], sterm.Reset, colors[7], sterm.Reset, colors[6], sterm.Reset, colors[6],
