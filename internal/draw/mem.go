@@ -23,8 +23,7 @@ func (s *Info) memStatic() {
 	s.putStr(s.x+3, s.y+17, "Available")
 	s.putStr(s.x+3, s.y+23, "Free")
 
-	s.putStr(s.x+25, s.y+10, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
-	s.putStr(s.x+25, s.y+10, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
+	s.putStr(s.x+24, s.y+10, sterm.RevPrint(fmt.Sprintf(" %.2f", s.DataStat.MemTotal)))
 }
 
 // draw dynamic info for bat block
