@@ -482,7 +482,11 @@ func getDiskInfo(ch chan diskInfo, errch chan error) {
 
 		var used int64
 		filepath.Walk(dir,
-			func(_ string, info os.FileInfo, _ error) error {
+			func(_ string, info os.FileInfo, err error) error {
+				if err != nil {
+					return nil
+				}
+
 				if !info.IsDir() {
 					used += info.Size()
 				}

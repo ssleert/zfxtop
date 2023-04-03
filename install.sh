@@ -111,7 +111,7 @@ main() {
   export TAR_FILE="${TMPDIR}/${TAR_NAME}"
 
   (
-    cd "$TMPDIR"
+    cd "$TMPDIR" || return
 
     msg "Downloading $TAR_NAME"
     download "$TAR_FILE" "$RELEASES_URL/download/$TAG/$TAR_NAME"
