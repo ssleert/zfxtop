@@ -282,16 +282,18 @@ func getCpuTemp(ch chan int, errch chan error) {
 	if err != nil {
 		errch <- err
 		ch <- 0
+    return
 	}
 	for _, e := range hwms {
 		hwmn := "/sys/class/hwmon/" + e.Name() + "/"
-		f, err := os.ReadFile(hwmn + "name")
-		if err == os.ErrNotExist {
-			continue
-		}
+    nameFilePath := hwmn + "name"
+    if _, err := os.Stat(nameFilePath); os.IsNotExist(err) {
+      continue
+    }
+    f, err := os.ReadFile(nameFilePath)
 		if err != nil {
 			errch <- err
-			ch <- 0
+			continue
 		}
 		if string(f) == "coretemp\n" {
 			isCoreTemp = true
