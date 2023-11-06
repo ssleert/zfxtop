@@ -7,7 +7,7 @@ import (
 // draw static info for info block
 func (s *Info) infoStatic() {
 	var (
-		distroName = iconed{s.colorList[2], "", "Distro"}
+		distroName = iconed{s.colorList[2], "󰏖", "Distro"}
 		hostName   = iconed{s.colorList[1], "", "Hostname"}
 	)
 

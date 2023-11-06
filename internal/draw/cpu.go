@@ -16,7 +16,7 @@ func (s *Info) cpuStatic() {
 func (s *Info) cpuDynamic() {
 	var (
 		load = iconed{s.colorList[2], "", "load"}
-		freq = iconed{s.colorList[1], "龍", "fr"}
+		freq = iconed{s.colorList[1], "󰓅", "fr"}
 		temp = iconed{s.colorList[0], "", "temp"}
 	)
 
@@ -34,21 +34,7 @@ func (s *Info) cpuDynamic() {
 	s.tui.WriteString(buf)
 
 	s.writeIconed(s.x+5, s.y+3, &load)
-
-	// nerd fonts FUCK YOU
-	// s.writeIconed(8, s.y+5, &freq)
-	// '龍' icon weight is bigger than normal char
-
-	s.tui.WriteString(sterm.CursorTo(s.x+5, s.y+4))
-	if s.icons {
-		s.tui.WriteString(freq[0])
-		s.tui.WriteString(freq[1])
-	}
-	s.reset()
-	s.tui.WriteString(freq[2])
-
-	// -------------------------------------------
-
+	s.writeIconed(s.x+5, s.y+4, &freq)
 	s.writeIconed(s.x+5, s.y+5, &temp)
 
 	s.tui.WriteString(sterm.CursorTo(s.x+15, s.y+3))

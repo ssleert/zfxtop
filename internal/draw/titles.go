@@ -15,12 +15,12 @@ func (s *Info) writeTitle(x, y int, d *iconed) {
 
 func (s *Info) titles() {
 	var (
-		cpuTitle  = iconed{s.colorMid, "", "CPU"}
+		cpuTitle  = iconed{s.colorMid, "󰍛", "CPU"}
 		memTitle  = iconed{s.colorMid, "", "MEM"}
-		swapTitle = iconed{s.colorMid, "", "SWAP"}
+		swapTitle = iconed{s.colorMid, "󰋊", "SWAP"}
 		diskTitle = iconed{s.colorMid, "", "DISK"}
 		batTitle  = iconed{s.colorMid, "", "BAT"}
-		infoTitle = iconed{s.colorMid, "", "INFO"}
+		infoTitle = iconed{s.colorMid, "󰋼", "INFO"}
 	)
 
 	s.writeTitle(s.x+3, s.y+1, &cpuTitle)
